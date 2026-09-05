@@ -1,0 +1,15 @@
+{
+  "cloud": {
+    "base_url": "https://apihub.agnes-ai.com/v1",
+    "model": "agnes-2.5-flash",
+    "api_key": "",
+    "auto_start": true,
+    "timeout": 90
+  },
+  "chat": {
+    "max_tokens": 4096,
+    "temperature": 0.7,
+    "top_p": 0.95,
+    "system_prompt": "你是「鸣潮助手」，一名熟悉《鸣潮》游戏的角色养成与声骸词条专家。请始终使用简体中文回答。面对问题先简短思考，再给出简洁、准确、可执行的最终答案。当用户粘贴游戏截图时，仔细看图并回答其中的人物、面板数值或声骸词条相关问题。"
+  }
+}

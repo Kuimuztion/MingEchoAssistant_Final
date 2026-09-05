@@ -1,0 +1,12 @@
+============================================
+  MingEchoAssistant Server  v1.2  (纯 C)
+============================================
+[core] 初始化 C 核心...
+[core] 版本: MingEchoAssistant_Final 1.0.0
+[core] 角色 56 / 声骸 180 / 武器 89 / 合鸣 34 / 合鸣词条 350
+[cloud] 模型: agnes-2.5-flash
+[cloud] 密钥: 已配置
+[web]   页面目录: C:\Users\18223\Desktop\MingEchoAssistant_Final\web
+[web]   打开浏览器: http://127.0.0.1:8123
+[info]  Ctrl+C 停止服务。
+[server] listening on http://127.0.0.1:8123

@@ -1,0 +1,1901 @@
+{
+ "ok": true,
+ "characters": {
+  "爱弥斯": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥280%",
+      "attack": "≥2300",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害 > 共鸣效率 > 固定攻击",
+   "weapon": "永远的启明星 > 千古洑流 > 赫奕流明 > 翼锋",
+   "echoes": "长路启航之星 5件套 (43311组合)",
+   "cost": "COST4：辛吉勒姆 (主词条暴击伤害 / 暴击)\nCOST3：热熔伤害加成 + 攻击百分比 / 热熔伤害加成 + 热熔伤害加成\nCOST1：攻击百分比",
+   "desc": "主C (热熔/聚爆/震谐)",
+   "role": "主C"
+  },
+  "绯雪": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥265%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥285%",
+      "attack": "≥2300",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害 > 固定攻击 > 共鸣效率",
+   "weapon": "灼霜 > 千古洑流 ≈ 赫奕流明 > 翼锋 > 风流的寓言诗",
+   "echoes": "雪落无声之愿 5件套 (43311组合)",
+   "cost": "COST4：共鸣回响·鸣式·虚造神型 (主词条暴击伤害 / 暴击)\nCOST3：冷凝伤害加成 + 攻击百分比 / 冷凝伤害加成 + 冷凝伤害加成\nCOST1：攻击百分比",
+   "desc": "主C (冷凝/霜渐效应)",
+   "role": "主C"
+  },
+  "守岸人": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "energy": "≥230%",
+      "hp": "≥35000"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "energy": "≥250%",
+      "hp": "≥40000"
+     }
+    }
+   ],
+   "statOrder": [
+    "energy",
+    "hp"
+   ],
+   "priority": "共鸣效率 > 生命百分比 > 固定生命 > 暴击伤害 > 其他",
+   "weapon": "星序协响 > 奇幻变奏 > 渊海回声 > 鸣动仪-25型",
+   "echoes": "隐世回光 5件套 (43311组合)",
+   "cost": "COST4：无归的谬误 / 鸣钟之龟 (主词条治疗效果加成 / 生命值)\nCOST3：共鸣效率 + 共鸣效率 / 共鸣效率 + 生命百分比\nCOST1：生命百分比 + 生命百分比",
+   "desc": "奶辅 (衍射)",
+   "role": "奶辅"
+  },
+  "穗穗": {
+   "stages": [
+    {
+     "label": "毕业",
+     "cells": {
+      "energy": "≥260%",
+      "hp": "≥30000 (无专武) /≥40000 (有专武)"
+     }
+    }
+   ],
+   "statOrder": [
+    "energy",
+    "hp"
+   ],
+   "priority": "共鸣效率 > 生命百分比 > 治疗效率 > 固定生命 > 其他（双暴/攻击完全不需要）",
+   "weapon": "栖霞饮露 > 奇幻变奏 > 渊海回声",
+   "echoes": "羽落空尘之歌 5件套 (34311组合)",
+   "cost": "COST4：千傀重楼 (主词条治疗效果加成)\nCOST3：首位[封庭械囿] + 共鸣效率 + 共鸣效率 / 共鸣效率 + 生命百分比\nCOST1：生命百分比 + 生命百分比",
+   "desc": "奶辅 (冷凝/效应体系)",
+   "role": "奶辅"
+  },
+  "秧秧·玄翎": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥255%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥285%",
+      "attack": "≥2300",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 重击伤害加成 > 攻击百分比 > 湮灭伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "天之苍苍 > 裁竹 > 千古洑流",
+   "echoes": "羽落空尘之歌 5件套 (43311组合)",
+   "cost": "COST4：千傀重楼 (主词条暴击伤害 / 暴击)\nCOST3：湮灭伤害加成 + 湮灭伤害加成 / 湮灭伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (湮灭/虚湮效应/重击流)",
+   "role": "主C"
+  },
+  "清霄": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥78.5%",
+      "crit_damage": "≥260%",
+      "attack": "≥2400",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥81.5%",
+      "crit_damage": "≥285%",
+      "attack": "≥2700",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害 ≈ 重击伤害 > 固定攻击 > 共鸣效率",
+   "weapon": "云琅 > 千古洑流 > 裁竹/裁春",
+   "echoes": "清邪荡煞之心 5件套 (43311组合)",
+   "cost": "COST4：天傀劫煞 (主词条暴击伤害 / 暴击)\nCOST3：气动伤害加成 + 攻击百分比 / 攻击百分比 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (气动/集谐)",
+   "role": "主C"
+  },
+  "达妮娅": {
+   "stages": [
+    {
+     "label": "毕业参考",
+     "cells": {
+      "crit": "建议接近/达到 100%",
+      "crit_damage": "≥241%",
+      "attack": "≥2400",
+      "energy": ">130%（舒适值约140%；不同体系会浮动）"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击率/暴击伤害 > 攻击百分比 > 共鸣解放伤害 > 共鸣效率 > 普攻伤害",
+   "weapon": "赝作的矮星 > 掣傀之手 ≈ 和光回唱 > 漪澜浮录 / 玻色星仪 (集谐队)",
+   "echoes": "斑驳粉饰之沫 5件套 (聚爆队) / 剪心辑梦之影 5件套 (集谐队) / (43311组合)",
+   "cost": "COST4：共鸣回响·达妮娅 / 炉芯机骸 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 热熔伤害加成 / 热熔伤害加成 + 共鸣效率\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (热熔/聚爆/集谐双模态)",
+   "role": "副C/辅助"
+  },
+  "洛瑟菈": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥255%",
+      "attack": "≥2000"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥265%",
+      "attack": "≥2200"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣技能伤害 > 固定攻击",
+   "weapon": "存帧 > 海的呢喃 ≈ 幽冥的忘忧章 > 虚饰的华尔兹",
+   "echoes": "43311",
+   "cost": "霜渐队COST分配：34311（首位放格洛犸图占COST3位）\nCOST4：主词条暴击伤害 / 暴击率\nCOST3：首位[格洛犸图] + 冷凝伤害加成/攻击百分比\nCOST1：攻击百分比 + 攻击百分比\nCOST4：无常凶鹭 / 鸣式虚造神型（主词条暴击伤害）\nCOST3：冷凝伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (冷凝/霜渐/声骸双体系)",
+   "role": "副C/辅助"
+  },
+  "露西": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥85%",
+      "crit_damage": "≥270%",
+      "attack": "≥2500",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 衍射伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "蜃影 > 相位涟漪 ≈ 停驻之烟 > 阳焰 > 千古湖水",
+   "echoes": "碎梦亡鬼之魇 1件 + 浮星祛暗 2件 + 此间永驻之光 2件 (43311组合)",
+   "cost": "COST4：梦魇·亚当·重锤 (主词条暴击伤害 / 暴击)\nCOST3：衍射伤害加成 + 攻击百分比 / 双攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (衍射/骇破体系/重击流)",
+   "role": "主C"
+  },
+  "丽贝卡": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥250%",
+      "attack": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥125%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害 > 共鸣效率 > 固定攻击",
+   "weapon": "碎骨 > 溢彩荧辉 > 停驻之烟 > 阳焰",
+   "echoes": "轻云出月 5件套 (43311组合)",
+   "cost": "COST4：梦魇·亚当·重锤 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (导电/骇破体系)",
+   "role": "副C/辅助"
+  },
+  "西格莉卡": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥150%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥280%",
+      "attack": "≥2400",
+      "energy": "≥150%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 声骸技能伤害 > 攻击百分比 > 共鸣效率(至150%) > 气动伤害加成 > 固定攻击",
+   "weapon": "昭日译注 > 焰光裁定 ≈ 脉冲协臂",
+   "echoes": "听取语义之愿 5件套 (43311组合)",
+   "cost": "COST4：无铭探索者 (主词条暴击 / 暴击伤害)\nCOST3：攻击百分比 + 攻击百分比 / 共鸣效率 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (气动/声骸技能特化)",
+   "role": "主C"
+  },
+  "陆·赫斯": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥255%",
+      "attack": "≥2200",
+      "energy": "≥125%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥285%",
+      "attack": "≥2500",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 衍射伤害加成 > 固定攻击",
+   "weapon": "白昼之脊 > 脉冲协臂 > 尘云旋臂",
+   "echoes": "流金溯真之式 5件套 (34311组合)",
+   "cost": "COST4：主词条暴击伤害 / 暴击\nCOST3：首位[双极·星升辉铳/双极·渊陨重锋] + 衍射伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (衍射/集谐体系/普攻流)",
+   "role": "主C"
+  },
+  "莫宁": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "energy": "≥230%",
+      "def": "≥3000",
+      "hp": "≥35000"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "energy": "≥260%",
+      "def": "≥3500",
+      "hp": "≥40000"
+     }
+    }
+   ],
+   "statOrder": [
+    "energy",
+    "def",
+    "hp"
+   ],
+   "priority": "共鸣效率 > 生命百分比 > 防御百分比 > 治疗效果加成 > 暴击伤害 > 固定防御",
+   "weapon": "宙算仪轨 > 异响空灵",
+   "echoes": "星构寻辉之环 5件套 (43311组合)",
+   "cost": "COST4：炉芯机骸 (主词条防御百分比 / 治疗效果加成)\nCOST3：共鸣效率 + 防御百分比 / 共鸣效率 + 共鸣效率\nCOST1：防御百分比 + 防御百分比",
+   "desc": "奶辅 (热熔/偏谐体系)",
+   "role": "奶辅"
+  },
+  "琳奈": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥255%",
+      "attack": "≥2100",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥285%",
+      "attack": "≥2400",
+      "energy": "≥140%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 共鸣解放伤害 > 固定攻击",
+   "weapon": "溢彩荧辉 > 停驻之烟 > 相位涟漪 > 阳焰",
+   "echoes": "逆光跃彩之约 5件套 (43311组合)",
+   "cost": "COST4：海维夏 (主词条暴击 / 暴击伤害)\nCOST3：衍射伤害加成 + 攻击百分比 / 攻击百分比 + 共鸣效率\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (衍射/震谐/集谐双模态)",
+   "role": "副C/辅助"
+  },
+  "千咲": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥255%",
+      "attack": "≥2000",
+      "energy": "≥125%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥285%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害 > 共鸣效率 > 固定攻击",
+   "weapon": "昙切 > 焰痕 > 浩境粼光",
+   "echoes": "命理崩毁之弦 3件 + 沉日劫明/幽夜隐匿之帷/不绝余音 2件 (43311组合)",
+   "cost": "COST4：共鸣回响·鸣式·利维亚坦 (主词条暴击伤害 / 暴击)\nCOST3：湮灭伤害加成 + 攻击百分比 / 湮灭伤害加成 + 湮灭伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "生存位/辅助/副C (湮灭/虚湮效应/效应队辅助)",
+   "role": "生存位/辅助/副C"
+  },
+  "仇远": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "裁竹 > 千古洑流 ≈ 赫奕流明 > 翼锋",
+   "echoes": "息界同调之律 3件 + 啸谷长风/流云逝尽之空/愿戴荣光之旅 2件 (输出向，43311组合) / 轻云出月 5件套 (纯辅助向)",
+   "cost": "COST4：共鸣回响·芬莱克 / 梦魇·飞廉之猩 / 无常凶鹭（轻云套）(主词条暴击伤害/暴击)\nCOST3：气动伤害加成 + 气动伤害加成 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (气动/声骸体系核心增伤)",
+   "role": "副C/辅助"
+  },
+  "嘉贝莉娜": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥280%",
+      "attack": "≥2400",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "光影双生 > 柯莱塔专武 > 阳焰",
+   "echoes": "焚羽猎魔之影 3件 + 热熔伤害加成 2件 (43311组合)",
+   "cost": "COST4：主词条暴击伤害 / 暴击\nCOST3：首位[蚀脊龙] + 热熔伤害加成 + 攻击百分比 / 热熔伤害加成 + 热熔伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (热熔/重击流)",
+   "role": "主C"
+  },
+  "尤诺": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥250%",
+      "attack": "≥2000",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 固定攻击",
+   "weapon": "专武 > 停驻之烟 > 相位涟漪",
+   "echoes": "荣斗铸锋之冠 3件 + 气动伤害加成 2件 (43311组合)",
+   "cost": "COST4：海之女 (主词条暴击 / 暴击伤害)\nCOST3：攻击百分比 + 攻击百分比 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "辅助/副C (气动/重击增伤专辅)",
+   "role": "辅助/副C"
+  },
+  "奥古斯塔": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥220%",
+      "attack": "≥2400",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥240%+",
+      "attack": "≥2400",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "驭冕铸雷之权 > 苍鳞千嶂 > 浩境粼光 > 金穹 > 纹秋",
+   "echoes": "荣斗铸锋之冠 3件 + 彻空鸣雷 2件 (43311组合)",
+   "cost": "COST4：伪作的神王 (主词条暴击伤害 / 暴击)\nCOST3：导电伤害加成 + 攻击百分比 / 导电伤害加成 + 导电伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (导电/重击流)",
+   "role": "主C"
+  },
+  "弗洛洛": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害 > 固定攻击",
+   "weapon": "幽冥的忘忧章 > 海的呢喃 ≈ 琼枝冰绡 ≈ 掣傀之手 > 漪澜浮录",
+   "echoes": "失序彼岸之梦 3件套 + 幽夜隐匿之帷/沉日劫明 2件套 (43311组合)",
+   "cost": "COST4：梦魇·赫卡忒 (主词条暴击伤害 / 暴击)\nCOST3：湮灭伤害加成 + 湮灭伤害加成 / 湮灭伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C/副C (湮灭/声骸体系)",
+   "role": "主C/副C"
+  },
+  "露帕": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100",
+      "energy": "≥110%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥72.5%",
+      "crit_damage": "≥274%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "焰痕 > 苍鳞千嶂 > 时和岁稔",
+   "echoes": "奔狼燎原之焰 5件套 (43311组合)",
+   "cost": "COST4：荣耀狮像 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 热熔伤害加成 / 热熔伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C (热熔/聚爆)",
+   "role": "副C"
+  },
+  "夏空": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥300%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 固定攻击",
+   "weapon": "林间的咏叹调 > 停驻之烟 > 叙别的罗曼史 ≈ 悖论喷流",
+   "echoes": "流云逝尽之空 5件套 (风蚀副C) / 轻云出月 5件套 (其它队副C) (43311组合)",
+   "cost": "COST4：共鸣回响·芙露德莉斯 (风蚀队) / 无常凶鹭 (其它队) (主词条暴击 / 暴击伤害)\nCOST3：气动伤害加成 + 气动伤害加成 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (气动/风蚀效应)",
+   "role": "副C/辅助"
+  },
+  "卡提希娅": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥255%",
+      "hp": "≥45000",
+      "energy": "≥110%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥275%",
+      "hp": "≥50000",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "hp",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 生命百分比 > 普攻伤害加成 > 共鸣效率 > 固定生命",
+   "weapon": "不屈命定之冠 > 裁春 > 戍关迅刀·镇海",
+   "echoes": "愿戴荣光之旅 5件套 (44111组合)",
+   "cost": "COST4：共鸣回响·芙露德莉斯 (主词条暴击伤害 / 暴击)\nCOST3：生命百分比 / 气动伤害加成 / 普攻伤害加成\nCOST1：生命百分比 + 生命百分比",
+   "desc": "主C (气动/风蚀效应/生命倍率)",
+   "role": "主C"
+  },
+  "赞妮": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥310%",
+      "attack": "≥2290",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "焰光裁定 > 悲喜剧 ≈ 洛可可专武 > 脉冲胁臂 > 尘云旋臂",
+   "echoes": "此间永驻之光 5件套 (43311组合)",
+   "cost": "COST4：主词条暴击 / 暴击伤害\nCOST3：首位[荣光节使] + 衍射伤害加成 + 衍射伤害加成 / 衍射伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (衍射/光噪效应)",
+   "role": "主C"
+  },
+  "菲比": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣解放伤害加成 > 共鸣效率",
+   "weapon": "和光回唱 > 掣傀之手 ≈ 白咩之印 > 大海的馈赠 > 清音",
+   "echoes": "此间永驻之光 5件套 (主C) / 轻云出月 5件套 (副C) (43311组合)",
+   "cost": "COST4：梦魇·哀声鸷 (主词条暴击 / 暴击伤害)\nCOST3：衍射伤害加成 + 衍射伤害加成 / 衍射伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C/副C (衍射/光噪效应)",
+   "role": "主C/副C"
+  },
+  "坎特蕾拉": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥240%",
+      "attack": "≥2300",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2300",
+      "energy": "≥140%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "海的呢喃 > 琼枝冰绡 > 掣傀之手 > 清音",
+   "echoes": "幽夜隐匿之帷 5件套 (弗洛洛队) / 轻云出月 5件套 (通用辅助) / 沉日劫明 5件套 (输出向) (43311组合)",
+   "cost": "COST4：罗蕾莱 (主词条暴击 / 暴击伤害)\nCOST3：湮灭伤害加成 + 攻击百分比 / 湮灭伤害加成 + 湮灭伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (湮灭/增伤奶)",
+   "role": "副C/辅助"
+  },
+  "布兰特": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥200%",
+      "attack": "≥2600",
+      "energy": "≥250%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥220%",
+      "attack": "≥2800",
+      "energy": "≥280%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 共鸣效率 > 攻击百分比 > 普攻伤害加成 > 固定攻击",
+   "weapon": "不灭航路 > 裁春 > 千古洑流 > 行进序曲",
+   "echoes": "无惧浪涛之勇 5件套 (43311组合)",
+   "cost": "COST4：叹息古龙 (主词条暴击 / 暴击伤害)\nCOST3：共鸣效率 + 共鸣效率 / 共鸣效率 + 热熔伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "生存位/主C/副C (热熔/共鸣效率转化攻击)",
+   "role": "生存位/主C/副C"
+  },
+  "洛可可": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥230%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥125%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "悲喜剧 > 诸方玄枢 > 擎渊怒涛 > 尘云旋臂",
+   "echoes": "幽夜隐匿之帷 5件套 / 轻云出月 5件套",
+   "cost": "COST4：梦魇·无常凶鹭 (主词条暴击 / 暴击伤害)\nCOST3：湮灭伤害加成 + 湮灭伤害加成 / 湮灭伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (湮灭/聚怪增伤)",
+   "role": "副C/辅助"
+  },
+  "珂莱塔": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2400",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥72%",
+      "crit_damage": "≥300%",
+      "attack": "≥2500",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "死与舞 > 掣傀之手 > 常驻五星",
+   "echoes": "凌冽决断之心 5件套 (43311组合)",
+   "cost": "COST4：异构武装 (主词条暴击 / 暴击伤害)\nCOST3：冷凝伤害加成 + 攻击百分比 / 冷凝伤害加成 + 冷凝伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (冷凝/共鸣技能爆发)",
+   "role": "主C"
+  },
+  "椿": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥67%",
+      "crit_damage": "≥280%",
+      "attack": "≥2300"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥71%",
+      "crit_damage": "≥285%",
+      "attack": "≥2600"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣解放伤害加成 > 固定攻击",
+   "weapon": "裁春 > 千古洑流 ≈ 赫奕流明",
+   "echoes": "沉日劫明 5件套 (43311组合)",
+   "cost": "COST4：梦魇·无冠者 (主词条暴击伤害 / 暴击)\nCOST3：湮灭伤害加成 + 攻击百分比 / 湮灭伤害加成 + 湮灭伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (湮灭/普攻输出)",
+   "role": "主C"
+  },
+  "相里要": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥73%",
+      "crit_damage": "≥288%",
+      "attack": "≥2350",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "诸方玄枢 > 擎渊怒涛 > 金掌 > 骇行",
+   "echoes": "彻空冥雷 5件套 (43311组合)",
+   "cost": "COST4：云闪之鳞 / 朔雷之鳞 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 攻击百分比 / 导电伤害加成 + 导电伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (导电/共鸣解放爆发)",
+   "role": "主C"
+  },
+  "折枝": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥1900",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥290%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "琼枝冰绡 > 常驻五星 > 四星武器",
+   "echoes": "凝夜白霜 5件套 (43311组合)",
+   "cost": "COST4：赫卡忒 (主词条暴击 / 暴击伤害)\nCOST3：冷凝伤害加成 + 攻击百分比 / 冷凝伤害加成 + 冷凝伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (冷凝/协同增伤)",
+   "role": "副C/辅助"
+  },
+  "长离": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥230%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "赫奕流明 > 千古洑流 > 飞景 > 不归孤军",
+   "echoes": "熔山裂谷 5件套 (43311组合)",
+   "cost": "COST4：梦魇·燎照之骑 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 热熔伤害加成 / 热熔伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (热熔/空战体系)",
+   "role": "主C"
+  },
+  "今汐": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥300%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣解放伤害加成 > 固定攻击",
+   "weapon": "时和岁稔 > 常驻五星 > 四星武器",
+   "echoes": "浮星祛暗 5件套 (优先43311；44111为可行替代)",
+   "cost": "COST4：角 (主词条暴击 / 暴击伤害)\nCOST3：衍射伤害加成 + 攻击百分比 / 衍射伤害加成 + 衍射伤害加成\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (衍射/共鸣技能爆发)",
+   "role": "主C"
+  },
+  "吟霖": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥230%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥255%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "掣傀之手 > 漪澜浮录 > 清音",
+   "echoes": "彻空冥雷 5件套 (43311组合)",
+   "cost": "COST4：云闪之鳞 / 朔雷之鳞 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 导电伤害加成 / 导电伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (导电/后台协同)",
+   "role": "副C/辅助"
+  },
+  "忌炎": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2300",
+      "energy": "≥125%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥290%",
+      "attack": "≥2500",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "苍鳞千嶂 > 浩境粼光 > 纹秋",
+   "echoes": "啸谷长风 5件套 (43311组合)",
+   "cost": "COST4：梦魇·飞廉之猩 (主词条暴击 / 暴击伤害)\nCOST3：气动伤害加成 + 气动伤害加成 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (气动/重击输出)",
+   "role": "主C"
+  },
+  "鉴心": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2300",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "常驻四星",
+   "echoes": "啸谷长风 5件套 (输出向) / 轻云出月 5件套 (辅助向) (43311组合)",
+   "cost": "COST4：飞廉之猩 (输出向) / 无常凶鹭 (辅助向) (主词条暴击 / 暴击伤害)\nCOST3：气动伤害加成 + 气动伤害加成 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/辅助 (气动/护盾聚怪)",
+   "role": "副C/辅助"
+  },
+  "卡卡罗": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2400",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "常驻四星",
+   "echoes": "彻空冥雷 5件套 (43311组合)",
+   "cost": "COST4：云闪之鳞 / 朔雷之鳞 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 导电伤害加成 / 导电伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (导电/重击爆发)",
+   "role": "主C"
+  },
+  "安可": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥300%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣技能伤害加成 > 共鸣效率",
+   "weapon": "掣傀之手 > 漪澜浮录 > 清音",
+   "echoes": "熔山裂谷 5件套 (43311组合)",
+   "cost": "COST4：梦魇·燎照之骑 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 热熔伤害加成 / 热熔伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (热熔/普攻输出)",
+   "role": "主C"
+  },
+  "维里奈": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "attack": "≥1800",
+      "energy": "≥200%",
+      "hp": "≥18000"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "attack": "≥2000",
+      "energy": "≥230%",
+      "hp": "≥25000"
+     }
+    }
+   ],
+   "statOrder": [
+    "attack",
+    "energy",
+    "hp"
+   ],
+   "priority": "共鸣效率 > 攻击百分比 > 生命百分比 > 固定攻击",
+   "weapon": "奇幻变奏 > 常驻四星",
+   "echoes": "隐世回光 5件套 (43311组合)",
+   "cost": "COST4：鸣钟之龟 / 无归的谬误 (主词条治疗效果加成)\nCOST3：共鸣效率 + 共鸣效率 / 共鸣效率 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "辅助/奶妈 (衍射/治疗增伤)",
+   "role": "辅助/奶妈"
+  },
+  "凌阳": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2400",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "擎渊怒涛 > 琼枝冰绡 > 常驻四星",
+   "echoes": "凝夜白霜 5件套 (43311组合)",
+   "cost": "COST4：辉萤军势 (主词条暴击 / 暴击伤害)\nCOST3：冷凝伤害加成 + 冷凝伤害加成 / 冷凝伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (冷凝/行狮输出)",
+   "role": "主C"
+  },
+  "卜灵": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥220%",
+      "attack": "≥1900",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2100",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 固定攻击",
+   "weapon": "奇幻变奏 > 常驻四星",
+   "echoes": "隐世回光 5件套 (43311组合)",
+   "cost": "COST4：无归的谬误 / 鸣钟之龟 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "辅助/副C (导电/治疗/共鸣技能增伤/电磁效应)",
+   "role": "辅助/副C"
+  },
+  "灯灯": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥220%",
+      "attack": "≥1900",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2100",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "常驻四星",
+   "echoes": "待确认",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：导电伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/主C (导电/红黄双形态切换)",
+   "role": "副C/主C"
+  },
+  "秧秧": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥220%",
+      "attack": "≥1800",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2000",
+      "energy": "≥140%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 固定攻击",
+   "weapon": "常驻四星",
+   "echoes": "轻云出月 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "辅助 (气动/充能/聚怪)",
+   "role": "辅助"
+  },
+  "白芷": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "attack": "≥1800",
+      "energy": "≥200%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "attack": "≥2000",
+      "energy": "≥230%"
+     }
+    }
+   ],
+   "statOrder": [
+    "attack",
+    "energy"
+   ],
+   "priority": "共鸣效率 > 攻击百分比 > 固定攻击",
+   "weapon": "奇幻变奏 > 浮星祷语",
+   "echoes": "隐世回光 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条治疗效果加成)\nCOST3：共鸣效率 + 共鸣效率 / 共鸣效率 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "辅助/奶妈 (冷凝/治疗/增伤)",
+   "role": "辅助/奶妈"
+  },
+  "炽霞": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥240%",
+      "attack": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "停驻之烟 > 阳焰 > 常驻四星",
+   "echoes": "熔山裂谷 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (热熔/自我强化/远程输出)",
+   "role": "主C"
+  },
+  "散华": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥260%",
+      "attack": "≥2200",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥290%",
+      "attack": "≥2400",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 重击伤害加成 > 共鸣解放伤害加成 > 共鸣效率",
+   "weapon": "千古洑流 > 常驻四星",
+   "echoes": "凝夜白霜 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：冷凝伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C/主C (冷凝/爆发输出)",
+   "role": "副C/主C"
+  },
+  "丹瑾": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥260%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥290%",
+      "attack": "≥2300",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 普攻伤害加成 > 重击伤害加成 > 固定攻击",
+   "weapon": "千古洑流 > 常驻四星",
+   "echoes": "沉日劫明 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：湮灭伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "主C (湮灭/烧血输出/迅刀)",
+   "role": "主C"
+  },
+  "莫特斐": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥240%",
+      "attack": "≥2000",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥270%",
+      "attack": "≥2200",
+      "energy": "≥140%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣解放伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "停驻之烟 > 华彩乐段 > 远行者矩阵·探幽",
+   "echoes": "高天共奏之曲 5件套 / 轻云出月 5件套 (43311组合)",
+   "cost": "COST4：待确认 (主词条暴击 / 暴击伤害)\nCOST3：热熔伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比",
+   "desc": "副C (热熔/脱手输出/重击增伤)",
+   "role": "副C"
+  },
+  "渊武": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥220%",
+      "attack": "≥1900",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2100",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 固定攻击",
+   "weapon": "袍泽之固 > 异响空灵",
+   "echoes": "轻云出月 5件套 (43311组合)",
+   "cost": "COST4：无常凶鹭 / 鸣钟之龟 (主词条治疗效果加成 / 防御百分比)\nCOST3：防御百分比 + 共鸣效率 / 防御百分比 + 防御百分比\nCOST1：防御百分比 + 防御百分比",
+   "desc": "副C/辅助 (导电/后台协同/生存)",
+   "role": "副C/辅助"
+  },
+  "桃祈": {
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥60%",
+      "crit_damage": "≥200%",
+      "def": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥230%",
+      "def": "≥2400",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "def",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 防御百分比 > 共鸣效率 > 固定防御",
+   "weapon": "异响空灵 > 奇幻变奏",
+   "echoes": "轻云出月 5件套 (43311组合)",
+   "cost": "COST4：鸣钟之龟 / 无归的谬误 (主词条治疗效果加成 / 防御百分比)\nCOST3：防御百分比 + 防御百分比\nCOST1：防御百分比 + 防御百分比",
+   "desc": "盾辅/副C (湮灭/护盾/弹反/防御力输出)",
+   "role": "盾辅/副C"
+  },
+  "景燃": {
+   "role": "主C",
+   "desc": "主C",
+   "stages": [
+    {
+     "label": "毕业线",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥280%",
+      "attack": "≥2400",
+      "energy": "≥115%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "",
+   "weapon": "",
+   "echoes": "",
+   "cost": ""
+  },
+  "秋水": {
+   "role": "主C",
+   "desc": "主C",
+   "stages": [
+    {
+     "label": "毕业线",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥260%",
+      "attack": "≥2500",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "",
+   "weapon": "",
+   "echoes": "",
+   "cost": ""
+  },
+  "釉瑚": {
+   "role": "副C",
+   "desc": "副C",
+   "stages": [
+    {
+     "label": "毕业线",
+     "cells": {
+      "crit": "≥80%",
+      "crit_damage": "≥260%",
+      "attack": "≥2400",
+      "energy": "≥120%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "",
+   "weapon": "",
+   "echoes": "",
+   "cost": ""
+  },
+  "漂泊者·气动": {
+   "role": "辅助",
+   "desc": "辅助/副C (气动/风蚀效应/治疗)",
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥250%",
+      "attack": "≥1800",
+      "energy": "≥130%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥280%",
+      "attack": "≥2000",
+      "energy": "≥140%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣效率 > 共鸣技能伤害加成 > 固定攻击",
+   "weapon": "血誓盟约 > 千古洑流 > 行进序曲",
+   "echoes": "流云逝尽之空 5件套 (43311组合；风蚀队) / 隐世回光 5件套 (43311组合；通用辅助)",
+   "cost": "COST4：共鸣回响·芙露德莉斯 (主词条暴击 / 暴击伤害)\nCOST3：气动伤害加成 + 气动伤害加成 / 气动伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比"
+  },
+  "漂泊者·衍射": {
+   "role": "主C",
+   "desc": "主C/副C (衍射/光噪效应/共鸣技能)",
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "千古洑流 > 赫奕流明 > 飞景",
+   "echoes": "此间永驻之光 5件套 (43311组合)",
+   "cost": "COST4：梦魇·哀声鸷 (主词条暴击 / 暴击伤害)\nCOST3：衍射伤害加成 + 衍射伤害加成 / 衍射伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比"
+  },
+  "漂泊者·湮灭": {
+   "role": "主C",
+   "desc": "主C (湮灭/强化状态/共鸣技能爆发)",
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥250%",
+      "attack": "≥2100",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥75%",
+      "crit_damage": "≥280%",
+      "attack": "≥2300",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 普攻伤害加成 > 共鸣解放伤害加成 > 共鸣效率",
+   "weapon": "赫奕流明 > 千古洑流 > 飞景",
+   "echoes": "沉日劫明 5件套 (43311组合)",
+   "cost": "COST4：梦魇·无冠者 (主词条暴击 / 暴击伤害)\nCOST3：湮灭伤害加成 + 湮灭伤害加成 / 湮灭伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比"
+  },
+  "漂泊者·导电": {
+   "role": "副C",
+   "desc": "副C/辅助 (导电/电磁效应/异动体系增伤)",
+   "stages": [
+    {
+     "label": "小毕业",
+     "cells": {
+      "crit": "≥65%",
+      "crit_damage": "≥250%",
+      "attack": "≥2000",
+      "energy": "≥120%"
+     }
+    },
+    {
+     "label": "大毕业",
+     "cells": {
+      "crit": "≥70%",
+      "crit_damage": "≥280%",
+      "attack": "≥2200",
+      "energy": "≥130%"
+     }
+    }
+   ],
+   "statOrder": [
+    "crit",
+    "crit_damage",
+    "attack",
+    "energy"
+   ],
+   "priority": "暴击/暴伤 > 攻击百分比 > 共鸣技能伤害加成 > 共鸣效率 > 固定攻击",
+   "weapon": "千古洑流 > 赫奕流明 > 行进序曲",
+   "echoes": "轻云出月 5件套 (43311组合；辅助/增伤向) / 彻空冥雷 5件套 (43311组合；纯输出向)",
+   "cost": "COST4：无常凶鹭 (辅助向) / 梦魇·朔雷之鳞 (输出向) (主词条暴击 / 暴击伤害)\nCOST3：电导伤害加成 + 电导伤害加成 / 电导伤害加成 + 攻击百分比\nCOST1：攻击百分比 + 攻击百分比"
+  }
+ }
+}

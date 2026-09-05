@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>库街区短信登录 - 鸣潮助手</title>
+<script src="https://static.geetest.com/v4/gt4.js"></script>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #0a0d13 0%, #111827 50%, #0a0d13 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #e5e7eb;
+  }
+  .login-box {
+    background: rgba(17, 24, 39, 0.85);
+    border: 1px solid rgba(201, 162, 75, 0.3);
+    border-radius: 16px;
+    padding: 40px;
+    width: 420px;
+    max-width: 90vw;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .logo h1 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #c9a24b, #f0d78c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+  .logo p {
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .input-wrap {
+    position: relative;
+  }
+  .input-wrap input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: #e5e7eb;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-wrap input:focus {
+    border-color: #c9a24b;
+  }
+  .input-wrap input::placeholder {
+    color: #4b5563;
+  }
+  .code-input-wrap {
+    display: flex;
+    gap: 10px;
+  }
+  .code-input-wrap input {
+    flex: 1;
+  }
+  .btn-send-code {
+    padding: 12px 18px;
+    background: rgba(201, 162, 75, 0.15);
+    border: 1px solid rgba(201, 162, 75, 0.4);
+    border-radius: 10px;
+    color: #c9a24b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .btn-send-code:hover:not(:disabled) {
+    background: rgba(201, 162, 75, 0.25);
+  }
+  .btn-send-code:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .btn-login {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #c9a24b, #d4af37);
+    border: none;
+    border-radius: 10px;
+    color: #0a0d13;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    margin-top: 8px;
+  }
+  .btn-login:hover:not(:disabled) {
+    box-shadow: 0 4px 20px rgba(201, 162, 75, 0.4);
+  }
+  .btn-login:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  .btn-login:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .message {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .message.error {
+    display: block;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+  }
+  .message.success {
+    display: block;
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    color: #86efac;
+  }
+  .message.info {
+    display: block;
+    background: rgba(111, 195, 223, 0.1);
+    border: 1px solid rgba(111, 195, 223, 0.2);
+    color: #93c5fd;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 24px;
+    font-size: 12px;
+    color: #4b5563;
+  }
+  .footer a {
+    color: #6b7280;
+    text-decoration: none;
+  }
+  .loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(10,13,19,0.3);
+    border-top-color: #0a0d13;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .logged-in {
+    text-align: center;
+    padding: 20px 0;
+  }
+  .logged-in .icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+  .logged-in h2 {
+    font-size: 20px;
+    color: #86efac;
+    margin-bottom: 8px;
+  }
+  .logged-in p {
+    font-size: 14px;
+    color: #9ca3af;
+    margin-bottom: 20px;
+  }
+  .btn-back {
+    padding: 10px 24px;
+    background: rgba(111, 195, 223, 0.15);
+    border: 1px solid rgba(111, 195, 223, 0.4);
+    border-radius: 8px;
+    color: #6fc3df;
+    font-size: 14px;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+<div class="login-box">
+  <div class="logo">
+    <h1>鸣潮助手</h1>
+    <p>库街区账号短信登录</p>
+  </div>
+
+  <div id="loginForm">
+    <div id="message" class="message"></div>
+
+    <div style="background:rgba(111,195,223,0.1);border:1px solid rgba(111,195,223,0.3);border-radius:8px;padding:10px 12px;margin-bottom:16px;font-size:12px;color:#6fc3df;line-height:1.7">
+      💡 <b>请先在库街区官方 App 获取验证码，再输入到此处。</b><br>
+      打开库街区 App → 登录页 → 输入手机号 → 获取验证码 → 收到后填入下方验证码框。
+    </div>
+
+    <div class="form-group">
+      <label>手机号</label>
+      <div class="input-wrap">
+        <input type="tel" id="mobile" maxlength="11" placeholder="请输入手机号" autocomplete="tel">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>验证码</label>
+      <div class="code-input-wrap">
+        <input type="text" id="code" maxlength="6" placeholder="请输入6位验证码" autocomplete="one-time-code">
+        <button class="btn-send-code" id="btnSendCode" disabled>获取验证码</button>
+      </div>
+      <div style="font-size:11px;color:#6b7280;margin-top:6px;line-height:1.5">
+        如点击「获取验证码」后未收到短信，请通过库街区官方 App 获取验证码后直接输入。
+      </div>
+    </div>
+
+    <button class="btn-login" id="btnLogin" disabled>登 录</button>
+  </div>
+
+  <div id="loggedIn" style="display:none;">
+    <div class="logged-in">
+      <div class="icon">🔑</div>
+      <h2 id="loggedTitle">已有登录凭证</h2>
+      <p id="loginInfo">当前已保存库街区 Token。如果之前的 Token 无法访问游戏数据，请点击下方按钮清除后重新短信登录。</p>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn-back" id="btnClearLogin" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.4);color:#fca5a5">清除旧凭证并重新登录</button>
+        <button class="btn-back" onclick="window.close()">关闭页面</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    登录凭证仅保存在本地，不会上传到任何第三方服务器
+  </div>
+</div>
+
+<script>
+const CAPTCHA_ID = '9ad5bca3df011e3476728a081e6a9cf0';
+let captchaObj = null;
+let geetestData = null;
+let countdown = 0;
+let countdownTimer = null;
+
+// 生成随机 devCode（匹配 waves-plugin 格式：小写字母数字）
+function genDevCode() {
+  return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+}
+
+let devCode = localStorage.getItem('kuro_dev_code_v2');
+if (!devCode) {
+  devCode = genDevCode();
+  localStorage.setItem('kuro_dev_code_v2', devCode);
+}
+
+const $ = id => document.getElementById(id);
+const mobileInput = $('mobile');
+const codeInput = $('code');
+const btnSendCode = $('btnSendCode');
+const btnLogin = $('btnLogin');
+const messageEl = $('message');
+
+function showMsg(text, type) {
+  messageEl.className = 'message ' + type;
+  messageEl.textContent = text;
+}
+function hideMsg() {
+  messageEl.className = 'message';
+  messageEl.textContent = '';
+}
+
+// 手机号输入验证
+mobileInput.addEventListener('input', () => {
+  const v = mobileInput.value.replace(/\D/g, '');
+  mobileInput.value = v;
+  const valid = /^1\d{10}$/.test(v);
+  btnSendCode.disabled = !valid;
+  checkLoginBtn();
+});
+
+codeInput.addEventListener('input', () => {
+  const v = codeInput.value.replace(/\D/g, '');
+  codeInput.value = v;
+  checkLoginBtn();
+});
+
+function checkLoginBtn() {
+  btnLogin.disabled = !(/^1\d{10}$/.test(mobileInput.value) && codeInput.value.length >= 4);
+}
+
+// 初始化 GeeTest
+function initCaptcha() {
+  if (typeof initGeetest4 === 'undefined') {
+    showMsg('极验 SDK 加载失败，请检查网络后刷新页面', 'error');
+    return;
+  }
+  initGeetest4({
+    captchaId: CAPTCHA_ID,
+    product: 'bind'
+  }, function(captcha) {
+    captchaObj = captcha;
+    captcha.onReady(function() {
+      // 验证组件就绪
+    });
+    captcha.onSuccess(function() {
+      const result = captcha.getValidate();
+      geetestData = result;
+      sendSmsCode();
+    });
+    captcha.onError(function(err) {
+      showMsg('验证加载失败：' + (err.msg || JSON.stringify(err)), 'error');
+    });
+    captcha.onClose(function() {
+      // 用户关闭验证
+    });
+  });
+}
+
+// 点击获取验证码
+btnSendCode.addEventListener('click', () => {
+  if (!captchaObj) {
+    showMsg('验证组件未就绪，请稍候', 'error');
+    return;
+  }
+  hideMsg();
+  geetestData = null;
+  captchaObj.showCaptcha();
+});
+
+// 发送验证码
+async function sendSmsCode() {
+  if (!geetestData) {
+    showMsg('验证失败，请重试', 'error');
+    return;
+  }
+  btnSendCode.disabled = true;
+  btnSendCode.textContent = '发送中...';
+  try {
+    // 直接从浏览器发请求到库街区 API（和 waves-plugin 一致），避免后端代理转义问题
+    const form = new URLSearchParams();
+    form.append('geetest_data', JSON.stringify(geetestData));
+    form.append('mobile', mobileInput.value);
+    console.log('geetestData:', JSON.stringify(geetestData));
+    console.log('devCode:', devCode);
+    const resp = await fetch('https://api.kurobbs.com/user/getSmsCode', {
+      method: 'POST',
+      headers: {
+        'devCode': devCode,
+        'source': 'ios',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: form
+    });
+    const data = await resp.json();
+    console.log('send_code response:', JSON.stringify(data));
+    if (data.code === 200) {
+      const detail = data.data ? JSON.stringify(data.data) : '';
+      showMsg('验证码请求已发送（API返回：' + (data.msg || '成功') + (detail ? ' data=' + detail : '') + '），如1分钟内未收到请检查拦截或重试', 'success');
+      startCountdown();
+    } else {
+      showMsg('发送失败：' + (data.msg || data.message || JSON.stringify(data)), 'error');
+      btnSendCode.disabled = false;
+      btnSendCode.textContent = '获取验证码';
+    }
+  } catch (e) {
+    showMsg('网络错误：' + e.message + '（可能是跨域限制，将改用后端代理）', 'error');
+    // 跨域失败时回退到后端代理
+    try {
+      const resp = await fetch('/api/kuro/send_code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          mobile: mobileInput.value,
+          geetest_data: JSON.stringify(geetestData),
+          dev_code: devCode
+        })
+      });
+      const data = await resp.json();
+      if (data.code === 200) {
+        showMsg('验证码请求已发送（代理模式），如1分钟内未收到请检查拦截或重试', 'success');
+        startCountdown();
+      } else {
+        showMsg('发送失败：' + (data.msg || JSON.stringify(data)), 'error');
+        btnSendCode.disabled = false;
+        btnSendCode.textContent = '获取验证码';
+      }
+    } catch (e2) {
+      showMsg('网络错误：' + e2.message, 'error');
+      btnSendCode.disabled = false;
+      btnSendCode.textContent = '获取验证码';
+    }
+  }
+}
+
+function startCountdown() {
+  countdown = 60;
+  btnSendCode.disabled = true;
+  btnSendCode.textContent = countdown + 's 后重发';
+  countdownTimer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      clearInterval(countdownTimer);
+      btnSendCode.disabled = false;
+      btnSendCode.textContent = '获取验证码';
+    } else {
+      btnSendCode.textContent = countdown + 's 后重发';
+    }
+  }, 1000);
+}
+
+// 登录
+btnLogin.addEventListener('click', async () => {
+  if (!(/^1\d{10}$/.test(mobileInput.value))) {
+    showMsg('请输入正确的手机号', 'error');
+    return;
+  }
+  if (codeInput.value.length < 4) {
+    showMsg('请输入验证码', 'error');
+    return;
+  }
+  hideMsg();
+  btnLogin.disabled = true;
+  btnLogin.innerHTML = '<span class="loading"></span>登录中...';
+
+  try {
+    // 直接从浏览器发请求到库街区 API（和 waves-plugin 一致）
+    const form = new URLSearchParams();
+    form.append('mobile', mobileInput.value);
+    form.append('code', codeInput.value);
+    const resp = await fetch('https://api.kurobbs.com/user/sdkLogin', {
+      method: 'POST',
+      headers: {
+        'devCode': devCode,
+        'source': 'ios',
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: form
+    });
+    const data = await resp.json();
+    console.log('sdk_login response:', JSON.stringify(data));
+    if (data.code === 200 && data.data && data.data.token) {
+      const token = data.data.token;
+      await saveToken(token);
+    } else {
+      showMsg('登录失败：' + (data.msg || data.message || JSON.stringify(data)), 'error');
+      btnLogin.disabled = false;
+      btnLogin.textContent = '登 录';
+    }
+  } catch (e) {
+    showMsg('网络错误：' + e.message, 'error');
+    btnLogin.disabled = false;
+    btnLogin.textContent = '登 录';
+  }
+});
+
+// 保存 token 到配置
+async function saveToken(token) {
+  try {
+    // 先保存 token（role_id/server_id 留空，后续自动发现）
+    await fetch('/api/kuro/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, role_id: '', server_id: '' })
+    });
+
+    // 自动发现角色列表，获取 role_id 和 server_id
+    const proxyResp = await fetch('/api/kuro/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: '/gamer/role/list', form: 'gameId=3' })
+    });
+    const proxyData = await proxyResp.json();
+    let roleName = '';
+    if (proxyData.code === 200 && proxyData.data && proxyData.data.length > 0) {
+      const role = proxyData.data[0];
+      await fetch('/api/kuro/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token,
+          role_id: role.roleId || '',
+          server_id: role.serverId || ''
+        })
+      });
+      roleName = role.roleName || '';
+    }
+
+    $('loginForm').style.display = 'none';
+    $('loggedIn').style.display = 'block';
+    $('loggedTitle').textContent = '✅ 登录成功';
+    $('loginInfo').textContent = roleName
+      ? '已登录账号：' + roleName + '（游戏ID：' + (proxyData.data[0].roleId) + '），请关闭此页面返回软件'
+      : 'Token 已保存，请关闭此页面返回软件，在游戏账户页点击连接';
+    $('btnClearLogin').style.display = 'none';
+  } catch (e) {
+    $('loginForm').style.display = 'none';
+    $('loggedIn').style.display = 'block';
+    $('loggedTitle').textContent = '✅ 登录成功';
+    $('loginInfo').textContent = 'Token 已保存（自动发现角色失败，请手动填写），请关闭此页面返回软件';
+    $('btnClearLogin').style.display = 'none';
+  }
+}
+
+// 检查是否已登录
+async function checkLoggedIn() {
+  try {
+    const resp = await fetch('/api/kuro/config');
+    const data = await resp.json();
+    if (data.token && data.token.length > 10) {
+      $('loginForm').style.display = 'none';
+      $('loggedIn').style.display = 'block';
+      $('loggedTitle').textContent = '已有登录凭证';
+      $('loginInfo').textContent = '当前已保存库街区 Token（前缀：' + data.token.substring(0, 12) + '…）。如果之前的 Token 无法访问游戏数据，请点击下方按钮清除后重新短信登录。';
+    }
+  } catch (e) {}
+}
+
+// 清除旧凭证并重新登录
+async function clearConfig() {
+  const btn = $('btnClearLogin');
+  btn.disabled = true;
+  btn.textContent = '清除中...';
+  try {
+    await fetch('/api/kuro/config/clear', { method: 'POST' });
+    // 刷新页面显示登录表单
+    location.reload();
+  } catch (e) {
+    showMsg('清除失败：' + e.message, 'error');
+    btn.disabled = false;
+    btn.textContent = '清除旧凭证并重新登录';
+  }
+}
+
+// 页面加载
+window.addEventListener('load', () => {
+  initCaptcha();
+  checkLoggedIn();
+  const clearBtn = document.getElementById('btnClearLogin');
+  if (clearBtn) clearBtn.addEventListener('click', clearConfig);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>鸣潮助手 · Ming Echo Assistant</title>
+  <link rel="icon" href="/res/ui/app.ico" />
+  <link rel="stylesheet" href="/css/style.css?v=42" />
+</head>
+<body>
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-text">
+        <span class="brand-title">鸣潮助手</span>
+        <span class="brand-sub">MING ECHO ASSISTANT</span>
+      </div>
+    </div>
+    <div class="top-right">
+      <span id="headerChip" class="chip chip-off">模型未连接</span>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <div class="body">
+    <!-- 左导航 -->
+    <nav class="navrail">
+      <button class="nav-btn active" data-view="chat">智能助手</button>
+      <button class="nav-btn" data-view="score">声骸评分</button>
+      <button class="nav-btn" data-view="db">数据库</button>
+      <button class="nav-btn" data-view="status">运行状态</button>
+      <button class="nav-btn" data-view="game">游戏账户</button>
+      <button class="nav-btn" data-view="chars">角色信息</button>
+      <button class="nav-btn" data-view="holo">全息战略</button>
+      <button class="nav-btn" data-view="tower">逆境深塔</button>
+      <button class="nav-btn" data-view="abyss">无尽湍渊</button>
+      <button class="nav-btn" data-view="matrix">终焉矩阵</button>
+      <button class="nav-btn" data-view="about">关于此项目</button>
+      <div class="nav-spacer"></div>
+      <div class="version">许可协议：<a href="/gpl3.html" target="_blank" style="color:var(--gold);text-decoration:none">GNU General Public License v3.0 (GPL-3.0)</a></div>
+    </nav>
+
+    <!-- 页面区 -->
+    <main class="content">
+
+      <!-- ============ 智能助手 ============ -->
+      <section id="view-chat" class="view">
+        <div class="panel-head">
+          <div>
+            <h2 class="card-title">智能助手</h2>
+            <p class="card-hint" id="chatModelHint">云端多模态 · 加载中…</p>
+          </div>
+        </div>
+        <div class="chat-scroll" id="chatScroll">
+          <div class="chat-list" id="chatList">
+          </div>
+        </div>
+        <div class="chips-row" id="chipsRow"></div>
+        <div class="input-card">
+          <div class="toolbar">
+            <button class="btn ghost" id="imgBtn">＋ 添加图片 / 粘贴截图</button>
+            <span class="spacer"></span>
+            <button class="btn danger" id="stopBtn" style="display:none">停止生成</button>
+          </div>
+          <textarea id="chatInput" placeholder="输入问题，或粘贴游戏截图（Ctrl+V），模型会看图回答…（Enter 发送 / Shift+Enter 换行）"></textarea>
+          <div class="input-bottom">
+            <span class="spacer"></span>
+            <button class="btn primary" id="sendBtn">发送</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 声骸评分 ============ -->
+      <section id="view-score" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">声骸评分</h2>
+          <p class="card-hint">选择角色 → 粘贴面板与声骸词条 → 评分 / 推荐</p>
+        </div>
+        <div class="score-layout">
+          <div class="score-left">
+            <div class="card portrait-card">
+              <img id="portraitImg" src="/res/Project/角色/今汐.webp" alt="portrait" onerror="this.style.display='none'" />
+              <div class="portrait-name" id="portraitName">今汐</div>
+            </div>
+          </div>
+          <div class="score-right">
+            <div class="card target-card">
+              <div class="card-title small">目标面板</div>
+              <div id="targetText" class="target-text">加载中…</div>
+            </div>
+            <div class="card">
+              <div class="card-title small">角色</div>
+              <div class="cselect" id="charSelectBox">
+                <button type="button" class="cselect-head" id="charSelectHead" aria-haspopup="listbox">
+                  <span id="charSelectVal">请选择角色</span>
+                  <span class="cselect-arrow">▾</span>
+                </button>
+                <div class="cselect-drop" id="charSelectDrop">
+                  <input type="text" id="charSearch" class="cselect-search" placeholder="输入角色名筛选…" autocomplete="off" />
+                  <div class="cselect-list" id="charList"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title small">角色主面板</div>
+              <textarea id="panelText" class="textarea" placeholder="例：暴击率 58% 暴击伤害 280% 攻击 2500 共鸣效率 118%"></textarea>
+            </div>
+            <div class="card">
+              <div class="card-title small">单个声骸评分（选填）</div>
+              <textarea id="echoText" class="textarea" placeholder="例：暴击率 21% 暴击伤害 28% 攻击 10% 共鸣效率 15%（不填则只评面板）"></textarea>
+            </div>
+            <div class="score-actions">
+              <button class="btn primary" id="scoreBtn">评分</button>
+              <button class="btn ghost" id="recommendBtn">养成推荐</button>
+              <span class="spacer"></span>
+              <span id="scoreBusy" class="card-hint hidden">计算中…</span>
+            </div>
+            <div id="scoreResult"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 数据库 ============ -->
+      <section id="view-db" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">数据库</h2>
+          <p class="card-hint">从 resources/Project 自动导入</p>
+        </div>
+        <div class="db-counts" id="dbCounts">
+          <div class="count-card"><div class="count-num" id="cCharacters">-</div><div class="count-label">角色</div></div>
+          <div class="count-card"><div class="count-num" id="cEchoes">-</div><div class="count-label">声骸</div></div>
+          <div class="count-card"><div class="count-num" id="cWeapons">-</div><div class="count-label">武器</div></div>
+          <div class="count-card"><div class="count-num" id="cResonance">-</div><div class="count-label">合鸣效果</div></div>
+          <div class="count-card"><div class="count-num" id="cResEchoes">-</div><div class="count-label">合鸣词条</div></div>
+        </div>
+        <div class="card db-tabs">
+          <div class="tabs">
+            <button class="tab active" data-tab="echoes">声骸</button>
+            <button class="tab" data-tab="weapons">武器</button>
+            <button class="tab" data-tab="resonance">合鸣效果</button>
+            <button class="tab" data-tab="resechoes">合鸣词条</button>
+          </div>
+          <div class="db-list" id="dbList"></div>
+        </div>
+      </section>
+
+      <!-- ============ 运行状态 ============ -->
+      <section id="view-status" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">运行状态</h2>
+        </div>
+        <div class="card">
+          <div class="card-title">云端模型（Agnes AI）</div>
+          <div id="cloudState" class="card-sub">未连接</div>
+          <div id="cloudDetail" class="card-hint">加载中…</div>
+          <div class="score-actions" style="margin-top:10px">
+            <button class="btn primary" id="cloudTestBtn">检测连接</button>
+            <button class="btn ghost" id="apiKeyEditBtn">编辑API秘钥</button>
+            <button class="btn ghost" id="cloudRefreshBtn">刷新</button>
+          </div>
+          <div id="apiKeyEditor" class="card" style="display:none;margin-top:10px;padding:12px">
+            <div class="card-title small" style="margin-bottom:8px">输入新的 API 秘钥（将覆盖旧秘钥）</div>
+            <input type="password" id="apiKeyInput" class="textarea" style="height:38px;min-height:38px;padding:6px 10px" placeholder="sk-..." />
+            <div class="score-actions" style="margin-top:8px">
+              <button class="btn primary" id="apiKeySaveBtn">保存</button>
+              <button class="btn ghost" id="apiKeyCancelBtn">取消</button>
+            </div>
+            <div id="apiKeyMsg" class="card-hint" style="margin-top:8px"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">组件检查</div>
+          <table class="comp-table" id="compTable">
+            <tr><td>C 核心</td><td id="compCore" class="comp-ok">-</td></tr>
+            <tr><td>角色数据库</td><td id="compChars" class="comp-ok">-</td></tr>
+            <tr><td>声骸数据库</td><td id="compEchoes" class="comp-ok">-</td></tr>
+            <tr><td>武器数据库</td><td id="compWeapons" class="comp-ok">-</td></tr>
+            <tr><td>云端模型</td><td id="compCloud" class="comp-ok">-</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">资源数据库</div>
+          <div id="dbInfo" class="card-sub">-</div>
+        </div>
+      </section>
+
+      <!-- ============ 游戏账户 ============ -->
+      <section id="view-game" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">游戏账户</h2>
+          <p class="card-hint">连接库街区账号，同步角色、声骸与面板数据</p>
+        </div>
+
+        <!-- 连接配置 -->
+        <div class="card" id="kuroConnectCard">
+          <div class="card-title">库街区连接</div>
+          <div class="kuro-form">
+            <div class="kuro-field">
+              <label>Token（库街区登录凭证）</label>
+              <input type="password" id="kuroToken" class="textarea" style="height:38px;min-height:38px;padding:6px 10px" placeholder="从库街区网页版 F12 抓包获取 Token" />
+            </div>
+            <div class="kuro-field-row">
+              <div class="kuro-field">
+                <label>游戏角色 ID（roleId）</label>
+                <input type="text" id="kuroRoleId" class="textarea" style="height:38px;min-height:38px;padding:6px 10px" placeholder="例：101812955" />
+              </div>
+              <div class="kuro-field">
+                <label>区服 ID（serverId）</label>
+                <input type="text" id="kuroServerId" class="textarea" style="height:38px;min-height:38px;padding:6px 10px;background:rgba(0,0,0,0.3);color:#8a93a3" value="76402e5b20be2c39f095a152090afddc" readonly title="国服默认，如需修改请编辑 kuro_config.json" />
+                <div style="font-size:11px;color:#5a6272;margin-top:4px">国服默认固定，如需其他区服请手动编辑 kuro_config.json</div>
+              </div>
+            </div>
+            <div class="score-actions" style="margin-top:10px">
+              <button class="btn primary" id="kuroSmsLoginBtn" style="background:linear-gradient(135deg,#6fc3df,#4a9eff);border-color:#6fc3df">短信登录（推荐）</button>
+              <button class="btn primary" id="kuroConnectBtn">保存并连接</button>
+              <button class="btn ghost" id="kuroHelpBtn">如何获取 Token？</button>
+              <button class="btn ghost" id="kuroSmsHelpBtn">如何获取验证码？</button>
+            </div>
+            <div id="kuroConnectMsg" class="card-hint" style="margin-top:8px"></div>
+          </div>
+          <!-- 获取 Token 教程（默认隐藏） -->
+          <div id="kuroTutorial" style="display:none;margin-top:14px;padding:12px;background:rgba(0,0,0,0.25);border-radius:6px">
+            <div class="card-title small" style="margin-bottom:8px">获取库街区 Token 步骤</div>
+            <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:var(--text2)">
+              <li>用浏览器打开 <b>库街区鸣潮 Wiki</b>：<span style="color:var(--gold)">https://wiki.kurobbs.com/mc/home</span></li>
+              <li>点击右上角登录你的库街区账号（手机号+验证码或密码）</li>
+              <li>登录后按 <b>F12</b> 打开开发者工具，切换到 <b>网络（Network）</b> 标签，筛选 <b>Fetch/XHR</b></li>
+              <li>按 <b>F5</b> 刷新页面，在请求列表中任选一个（如 getPage），在<b>请求标头</b>中找到 <b>Token</b> 字段，复制其值</li>
+              <li>游戏角色 ID 和区服 ID 可在库街区「我的」页面的角色卡中查看，或从抓包请求的 form 数据中获取</li>
+            </ol>
+            <p style="margin:8px 0 0;font-size:12px;color:var(--text3)">注意：Token 会定期过期，失效后重新抓包获取即可。本软件仅在本地保存 Token，不会上传到任何第三方服务器。</p>
+          </div>
+          <!-- 获取验证码教程（默认隐藏） -->
+          <div id="kuroSmsTutorial" style="display:none;margin-top:14px;padding:12px;background:rgba(0,0,0,0.25);border-radius:6px">
+            <div class="card-title small" style="margin-bottom:8px">获取短信验证码步骤</div>
+            <ol style="margin:0;padding-left:20px;line-height:1.9;font-size:13px;color:var(--text2)">
+              <li>打开手机上的<b>库街区 App</b>（或网页版 kurobbs.com）</li>
+              <li>进入登录页面，输入你的手机号，点击「获取验证码」</li>
+              <li>完成官方的人机验证，等待收到短信</li>
+              <li>将收到的 <b>6 位数字验证码</b> 输入到本软件的短信登录弹窗中</li>
+              <li>点击「登录」即可自动获取 Token 并发现角色 ID</li>
+            </ol>
+            <p style="margin:8px 0 0;font-size:12px;color:var(--text3)">说明：由于库街区短信接口限制，本软件内的「获取验证码」按钮可能无法直接下发短信，请通过官方 App 获取验证码后输入。验证码有效期通常为 5 分钟。</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 角色信息 ============ -->
+      <section id="view-chars" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">角色信息</h2>
+          <p class="card-hint">查看已连接账号的角色列表、面板属性与声骸配置</p>
+        </div>
+
+        <!-- 角色列表 -->
+        <div class="card" id="kuroCharListCard" style="display:none">
+          <div class="card-title">我的角色 <span id="kuroCharCount" class="card-hint" style="font-size:13px"></span></div>
+          <div id="kuroCharGrid" class="kuro-char-grid"></div>
+        </div>
+
+        <!-- 角色详情 -->
+        <div class="card" id="kuroCharDetailCard" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div class="card-title" id="kuroDetailTitle" style="margin:0">角色详情</div>
+            <button id="kuroScoreBtn" style="display:none;padding:6px 16px;background:linear-gradient(135deg,#c9a24b,#a8862f);color:#0a0d13;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">评分</button>
+          </div>
+          <div id="kuroCharDetail"></div>
+        </div>
+      </section>
+
+      <!-- ============ 全息战略 ============ -->
+      <section id="view-holo" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">全息战略</h2>
+          <p class="card-hint">查看各模式 Boss 的全息1-6难度通关记录</p>
+        </div>
+
+        <!-- 全息战略内容 -->
+        <div class="card">
+          <div id="holoStatus" style="padding:12px;color:var(--text3);font-size:13px">正在加载挑战数据…</div>
+          <div id="holoContent" style="display:none"></div>
+        </div>
+      </section>
+
+      <!-- ============ 逆境深塔 ============ -->
+      <section id="view-tower" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">逆境深塔</h2>
+          <p class="card-hint">逆境之塔·深境区 — 残响之塔 / 深境之塔 / 回音之塔</p>
+        </div>
+        <div class="card">
+          <div id="towerStatus" style="padding:12px;color:var(--text3);font-size:13px">正在加载深塔数据…</div>
+          <div id="towerContent" style="display:none"></div>
+        </div>
+      </section>
+
+      <!-- ============ 无尽湍渊 ============ -->
+      <section id="view-abyss" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">无尽湍渊</h2>
+          <p class="card-hint">海墟瑞渊 · 上半/下半积分挑战</p>
+        </div>
+        <div class="card">
+          <div style="padding:30px 20px;text-align:center">
+            <div style="font-size:48px;margin-bottom:16px;opacity:.3">🌊</div>
+            <div style="font-size:16px;color:var(--gold);margin-bottom:10px;font-weight:600">数据暂未开放</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.8;max-width:500px;margin:0 auto">
+              库街区 API 目前未开放「无尽湍渊」的玩家分数与出战队伍数据。<br>
+              此页面已预留，待库街区开放对应接口后将自动显示：<br>
+              <span style="color:var(--ice)">上半/下半积分 · 出战角色头像 · 关卡特性 · 海域特性</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 终焉矩阵 ============ -->
+      <section id="view-matrix" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">终焉矩阵</h2>
+          <p class="card-hint">限时挑战 · 矩阵积分与编队记录</p>
+        </div>
+        <div class="card">
+          <div style="padding:30px 20px;text-align:center">
+            <div style="font-size:48px;margin-bottom:16px;opacity:.3">⚡</div>
+            <div style="font-size:16px;color:var(--gold);margin-bottom:10px;font-weight:600">数据暂未开放</div>
+            <div style="font-size:13px;color:var(--text2);line-height:1.8;max-width:500px;margin:0 auto">
+              库街区 API 目前未开放「终焉矩阵」的玩家分数与出战队伍数据。<br>
+              此页面已预留，待库街区开放对应接口后将自动显示：<br>
+              <span style="color:var(--ice)">矩阵积分 · 出战角色头像 · 挑战层数 · 编队记录</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ 关于此项目 ============ -->
+      <section id="view-about" class="view hidden">
+        <div class="panel-head">
+          <h2 class="card-title">关于此项目</h2>
+          <p class="card-hint">鸣潮助手 · Ming Echo Assistant — 项目说明与致谢</p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">项目简介</div>
+          <p style="color:var(--text2);font-size:13px;line-height:1.9;margin:8px 0">
+            鸣潮助手是一款由玩家自发开发的<b>非官方粉丝工具</b>，旨在为 PC 端玩家提供便捷的角色面板查看和声骸评分功能。
+            由于库街区 PC 端暂不支持查看角色面板数据，本工具通过库街区公开 API 获取玩家自己的角色数据，并在本地进行展示与分析。
+          </p>
+          <p style="color:var(--text2);font-size:13px;line-height:1.9;margin:8px 0">
+            本工具<b>不修改游戏文件、不注入游戏进程、不作弊、不影响其他玩家</b>，仅作为数据查看与评分辅助工具使用。
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">致谢</div>
+          <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
+            <p><b style="color:var(--gold)">库街区 / 库洛游戏</b> — 感谢库街区提供的角色图鉴与公开 API，本工具的角色数据、声骸数据、武器数据均来源于库街区。</p>
+            <p><b style="color:var(--ice)">Agnes AI</b> — 感谢 Agnes AI 提供的免费多模态大模型 API（agnes-2.5-flash），为本工具的智能评分、养成推荐和对话助手提供算力支持。</p>
+            <p><b style="color:var(--text)">开源社区</b> — 感谢 waves-plugin 等开源项目对库街区 API 的逆向与文档化工作，为本工具的开发提供了重要参考。</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">数据与隐私</div>
+          <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
+            <p><b>所有数据仅保存在本地，不上传任何服务器。</b></p>
+            <p>• 你的库街区 Token、角色数据、声骸数据均保存在你自己的电脑本地（项目目录下的 kuro_config.json）</p>
+            <p>• 本工具不收集、不上传、不分析任何用户个人信息</p>
+            <p>• Agnes AI API 调用仅传输你主动输入的评分数据和对话内容，不包含你的库街区账号凭证</p>
+            <p>• 你可以随时删除 kuro_config.json 来清除所有本地数据</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">请求频率限制</div>
+          <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
+            <p>为避免对库街区服务器造成压力，本工具内置了<b>请求间隔限制</b>：</p>
+            <p>• 对库街区 API 的连续请求之间至少间隔 <b>1 秒</b></p>
+            <p>• 单分钟内请求总数不超过 <b>30 次</b></p>
+            <p>• 角色详情数据会在本地缓存，重复查看同一角色不会重复请求服务器</p>
+            <p>请合理使用本工具，不要进行高频批量抓取，以免对库街区服务器造成负担。</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">开源声明</div>
+          <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
+            <p>本项目（包括所有源代码）<b>完全开源、永久免费、不收一分钱</b>。</p>
+            <p>• 源代码将托管于 <b>GitHub</b>，任何人可自由查看、学习、使用</p>
+            <p>• 采用 <b style="color:var(--gold)">GNU GPL v3.0</b> 开源协议</p>
+            <p>• GPL v3.0 协议要求：任何基于本项目修改后的衍生作品，<b>必须同样以 GPL v3.0 协议开源发布</b>，不得闭源商用</p>
+            <p>• 此举旨在防止他人获取源代码后二次修改却不发布，确保项目始终保持开源透明</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">免责声明</div>
+          <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
+            <p><b>其他版本声明：</b></p>
+            <p>• 本项目的主干开发者为 <b style="color:var(--gold)">「你猜我在线不」</b></p>
+            <p>• 任何其他版本、分支、衍生作品的功能、权限、行为及法律责任，<b>与主干开发者毫无相干</b></p>
+            <p>• 主干开发者<b>不会对任何第三方修改版本承担法律纠纷</b></p>
+            <p>• 请自行按需修改你想要的版本，但<b>不得利用本项目进行恶意攻击他人服务器、恶意篡改数据、或任何违法违规行为</b></p>
+            <p>• 本工具与库洛游戏、库街区无任何官方关联，"鸣潮"及相关商标归库洛游戏所有</p>
+          </div>
+        </div>
+
+        <div class="card" style="padding:20px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap">
+            <div style="flex:1;min-width:280px">
+              <p style="color:var(--text3);font-size:12px;line-height:1.8">
+                鸣潮助手 · Ming Echo Assistant v2.0<br>
+                主干开发者：你猜我在线不 · GPL v3.0 开源协议<br>
+                感谢库街区图鉴贡献 · 感谢 Agnes AI API 提供<br>
+                所有数据仅保存在本地，不上传任何服务器
+              </p>
+            </div>
+            <div style="text-align:center;flex-shrink:0">
+              <div style="display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:8px">
+                <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
+                  <a href="https://agnes-ai.com/" target="_blank" title="Agnes AI"><img src="/res/Project/Icons/AgnesAI.png" style="width:64px;height:64px;border-radius:10px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
+                  <a href="https://www.kurobbs.com/main.html" target="_blank" title="库街区"><img src="/res/Project/Icons/库街区.png" style="width:64px;height:64px;border-radius:10px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
+                </div>
+                <div style="display:flex;gap:6px;align-items:center">
+                  <a href="https://www.doubao.com/" target="_blank" title="豆包"><img src="/res/Project/Icons/doubao.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
+                  <a href="https://chatgpt.com/" target="_blank" title="ChatGPT"><img src="/res/Project/Icons/ChatGPT.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
+                  <a href="https://claude.ai/" target="_blank" title="Claude"><img src="/res/Project/Icons/Claude.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
+                </div>
+              </div>
+              <p style="color:var(--gold);font-size:12px;font-style:italic;margin:0">Thank your for making a difference.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="/js/api.js?v=42"></script>
+  <script src="/js/chat.js?v=42"></script>
+  <script src="/js/score.js?v=42"></script>
+  <script src="/js/db.js?v=42"></script>
+  <script src="/js/status.js?v=42"></script>
+  <script src="/js/game.js?v=42"></script>
+  <script src="/js/holo.js?v=42"></script>
+  <script src="/js/tower.js?v=42"></script>
+  <script src="/js/app.js?v=42"></script>
+</body>
+</html>

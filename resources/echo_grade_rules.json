@@ -82,6 +82,19 @@
         "共鸣技能伤害加成"
       ]
     },
+    "景燃": {
+      "requiresDoubleCrit": true,
+      "validSubs": [
+        "暴击",
+        "共鸣效率",
+        "暴击伤害",
+        "攻击百分比",
+        "固定攻击",
+        "生命百分比",
+        "固定生命",
+        "重击伤害加成"
+      ]
+    },
     "菲比": {
       "requiresDoubleCrit": true,
       "validSubs": [

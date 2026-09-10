@@ -36,6 +36,7 @@ int main(int argc, char** argv) {
     }
 
     int port = 8123;
+    int no_browser = 0;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--root") == 0 && i + 1 < argc) {
@@ -44,7 +45,7 @@ int main(int argc, char** argv) {
             port = atoi(argv[++i]);
             if (port <= 0 || port > 65535) port = 8123;
         } else if (strcmp(argv[i], "--no-browser") == 0) {
-            /* 由 run.bat 控制，默认总是打开；此参数保留 */
+            no_browser = 1;
         }
     }
 
@@ -68,8 +69,8 @@ int main(int argc, char** argv) {
     printf("[info]  Ctrl+C 停止服务。\n");
     fflush(stdout);
 
-    /* 服务端线程（默认自动开浏览器） */
-    open_browser(port);
+    /* 服务端线程（默认自动开浏览器，--no-browser 关闭） */
+    if (!no_browser) open_browser(port);
     int rc = http_server_start(root, port);
     if (rc != 0) {
         fprintf(stderr, "[error] %s\n", mec_last_error());

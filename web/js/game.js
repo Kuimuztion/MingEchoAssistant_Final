@@ -228,25 +228,9 @@ const Game = {
     detailCard.style.display = 'block';
     detail.innerHTML = '<div style="padding:20px;color:var(--text3)">正在加载角色详情…</div>';
 
-    /* 评分按钮 */
-    const scoreBtn = document.getElementById('kuroScoreBtn');
     const charId = char.roleId || char.id || char.characterId || char.role_id || '';
     const roleId = document.getElementById('kuroRoleId').value.trim();
     const serverId = document.getElementById('kuroServerId').value.trim();
-    const charIcon = char.roleIconUrl || char.iconUrl || char.headIcon || '';
-    if (scoreBtn && charId && roleId && serverId) {
-      scoreBtn.style.display = '';
-      scoreBtn.onclick = () => {
-        const url = '/char_score.html?roleId=' + encodeURIComponent(roleId)
-          + '&serverId=' + encodeURIComponent(serverId)
-          + '&charId=' + encodeURIComponent(charId)
-          + '&name=' + encodeURIComponent(name)
-          + '&icon=' + encodeURIComponent(charIcon);
-        window.open(url, '_blank');
-      };
-    } else if (scoreBtn) {
-      scoreBtn.style.display = 'none';
-    }
 
     if (!charId) {
       detail.innerHTML = this.renderDetailFromRaw(char, null);
@@ -273,6 +257,7 @@ const Game = {
 
       const parsed = this.parseData(data);
       detail.innerHTML = this.renderDetail(parsed || char, char);
+      this.fetchEchoGrades(name, parsed || char);
     } catch (e) {
       console.error('showCharacterDetail error:', e);
       detail.innerHTML = '<div style="padding:16px;color:var(--red);font-size:13px">加载异常：' + this.escapeHtml(String(e)) + '<br><br>请刷新页面后重试，或检查网络连接。</div>';
@@ -437,6 +422,7 @@ const Game = {
           html += '</div>';
         }
         html += '</div>'; // 关闭 flex 内容容器
+        html += '<div class="echo-grade-badge" data-echo-idx="' + (validEchoes.indexOf(e)) + '"></div>';
         html += '</div>'; // 关闭声骸卡片
       });
       html += '</div>'; // 关闭声骸列表
@@ -453,6 +439,36 @@ const Game = {
 
   renderDetailFromRaw(char, errorResp) {
     return this.renderDetail(char, char);
+  },
+
+  /* 声骸评分定级：交给本地 C 后端 /api/echo_grade 计算，前端只负责展示 */
+  fetchEchoGrades(name, data) {
+    /* 面板里“漂泊者”不区分属性，按角色详情的元素映射到 漂泊者·气动/衍射/湮灭/导电 */
+    let character = name;
+    const role = (data && (data.role || data)) || {};
+    const elem = role.attributeName || role.element || '';
+    if (character === '漂泊者' && elem) character = '漂泊者·' + elem;
+    const echoes = (data && ((data.phantomData && data.phantomData.equipPhantomList) || data.echoes)) || [];
+    const list = echoes.filter(e => e && e.phantomProp);
+    if (!list.length) return;
+    /* 与渲染时的 validEchoes 顺序一致；空副词条用占位段保持索引对齐 */
+    const dataStr = list.map(e =>
+      (Array.isArray(e.subProps) && e.subProps.length > 0)
+        ? e.subProps.map(s => (s.attributeName || '') + ':' + (s.attributeValue || '')).join(',')
+        : '无:0'
+    ).join('|');
+    Api.json('/api/echo_grade', { character: character, data: dataStr }).then(res => {
+      if (!res || !res.ok || !res.found || !Array.isArray(res.results)) return;
+      const colors = { ACE:'#ff4d4d', SSS:'#f5c542', SS:'#f5c542', S:'#f5c542', A:'#4da3ff', B:'#4da3ff', C:'#3ecf6e', D:'#3ecf6e' };
+      document.querySelectorAll('.echo-grade-badge').forEach((el) => {
+        const idx = parseInt(el.dataset.echoIdx, 10);
+        const r = res.results[idx];
+        if (r && r.grade && colors[r.grade]) {
+          el.textContent = r.grade;
+          el.style.color = colors[r.grade];
+        }
+      });
+    }).catch(() => { /* 评分失败时保持空白，不影响详情展示 */ });
   },
 
   escapeHtml(s) {

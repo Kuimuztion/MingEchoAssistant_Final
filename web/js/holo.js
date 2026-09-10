@@ -139,15 +139,14 @@ const Holo = {
       for (let d = 1; d <= 6; d++) {
         const rec = b.difficulties[d];
         if (rec) {
-          const passTime = (rec.passTime && rec.passTime > 0) ? rec.passTime + '秒' : '—';
           const teamNames = (rec.roles || []).map(r => r.roleName).join('、');
           html += '<div class="holo-diff-cell cleared">';
           html += '<div class="diff-label">全息' + d + '</div>';
-          html += '<div class="diff-time">' + passTime + '</div>';
+          html += '<div class="diff-time">已通过</div>';
           if (teamNames) html += '<div class="diff-team">出战：' + this.escapeHtml(teamNames) + '</div>';
           html += '</div>';
         } else {
-          html += '<div class="holo-diff-cell"><div class="diff-label">全息' + d + '</div><div class="diff-time">未通关</div></div>';
+          html += '<div class="holo-diff-cell"><div class="diff-label">全息' + d + '</div><div class="diff-time">暂无记录</div></div>';
         }
       }
       html += '</div>';
@@ -161,5 +160,31 @@ const Holo = {
 
   escapeHtml(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  },
+
+  /* 解析通关用时：官方正常为秒数，但部分记录可能返回浮点、数字字符串
+     或挂在其它字段名下；全部尝试失败时回退为"已通关"，不再显示"—" */
+  formatPassTime(rec) {
+    const candidates = [rec.passTime, rec.pass_time, rec.costTime, rec.useTime, rec.passTimeSecond, rec.time];
+    for (const v of candidates) {
+      if (v === undefined || v === null || v === '') continue;
+      const n = Number(v);
+      if (Number.isFinite(n) && n > 0) {
+        const total = Math.round(n);
+        const m = Math.floor(total / 60), s = total % 60;
+        return m > 0 ? m + '分' + (s < 10 ? '0' : '') + s + '秒' : s + '秒';
+      }
+      if (typeof v === 'string') {
+        /* 兼容 "1:32" / "1分32秒" / "92s" 等字符串格式 */
+        const m2 = v.match(/^\s*(?:(\d+)\s*(?::|分|′))?\s*(\d+(?:\.\d+)?)\s*(?:秒|s|"|″)?\s*$/);
+        if (m2) {
+          const mm = parseInt(m2[1] || '0', 10);
+          const ss = Math.round(parseFloat(m2[2]));
+          const total = mm * 60 + ss;
+          if (total > 0) return mm > 0 ? mm + '分' + (ss < 10 ? '0' : '') + ss + '秒' : ss + '秒';
+        }
+      }
+    }
+    return '已通关';
   },
 };

@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/res/ui/app.png" />
+<title>配队养成 - 鸣潮攻略站</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+/* 滚动条（与主界面一致） */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #2a3342; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4557; }
+::-webkit-scrollbar-track { background: transparent; }
+
+  img, * { -webkit-user-drag:none; user-select:none; -webkit-user-select:none; }
+  body {
+    background: #0a0d13;
+    background-image: radial-gradient(1200px 700px at 50% -20%, #14202e 0%, #0a0d13 60%);
+    color: #e6e8ee;
+    font-family: 'Segoe UI','Microsoft YaHei',sans-serif;
+    min-height: 100vh;
+    padding: 28px 32px 48px;
+  }
+  .wrap { max-width: 1280px; margin:0 auto; }
+
+  /* 顶部 */
+  .top-bar { display:flex; align-items:center; gap:16px; margin-bottom:26px; }
+  .back-btn {
+    display:inline-block; padding:8px 18px; border-radius:8px;
+    background:#141a26; border:1px solid #2a3346; color:#c8cdd5;
+    font-size:13px; text-decoration:none; cursor:pointer; transition:all .15s;
+  }
+  .back-btn:hover { border-color:#c9a24b; color:#c9a24b; }
+  .top-title { font-size:22px; font-weight:700; color:#c9a24b; letter-spacing:2px; }
+  .top-sub { font-size:13px; color:#7a8499; margin-left:4px; }
+
+  /* 单个角色养成区块：立绘 | 属性模版 | 首位声骸 */
+  .build-row {
+    display:flex; align-items:stretch; gap:24px;
+    max-width:1100px; margin:0 auto 34px;
+    background: rgba(20,26,37,.62);
+    border:1px solid #2e384a; border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+    padding:22px 26px; overflow:hidden;
+  }
+  /* 左侧人物立绘 */
+  .build-portrait {
+    flex-shrink:0; width:190px; height:460px; border-radius:10px; overflow:hidden; position:relative;
+    background:radial-gradient(circle at 50% 25%, rgba(111,195,223,.10), rgba(0,0,0,.35));
+    border:1px solid #2a3346;
+  }
+  /* 预处理立绘已裁成 190:460 比例(380x920=2x)，直接精确铺满，一次性采样最清晰 */
+  .build-portrait img {
+    width:100%; height:100%; object-fit:cover; object-position:center top; display:block;
+  }
+  .build-portrait-name {
+    position:absolute; left:0; right:0; bottom:0; padding:8px 0; text-align:center;
+    background:linear-gradient(to bottom,rgba(10,13,19,0),rgba(10,13,19,.9));
+    font-size:15px; font-weight:700; letter-spacing:2px; color:#f0f2f6;
+    text-shadow:0 2px 8px rgba(0,0,0,.9);
+  }
+  /* 中间属性模版 */
+  .build-mid { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .build-name { font-size:17px; font-weight:700; color:#c9a24b; letter-spacing:2px; margin-bottom:12px; }
+  .stat-table {
+    width:100%; border-collapse:collapse; font-size:13px;
+    border:1px solid #2a3346; border-radius:8px; overflow:hidden;
+  }
+  .stat-table th {
+    background:rgba(201,162,75,.14); color:#e8d4a0; font-weight:600;
+    padding:9px 16px; text-align:left; border-bottom:1px solid #2a3346; letter-spacing:1px;
+  }
+  .stat-table td {
+    padding:8px 16px; color:#c8cdd5; border-bottom:1px solid #232b39;
+  }
+  .stat-table tr:last-child td { border-bottom:none; }
+  .stat-table tr:nth-child(even) td { background:rgba(255,255,255,.02); }
+  .stat-table td.attr { color:#8fa8c8; width:38%; }
+  .stat-table td.val { color:#e6e8ee; font-weight:600; }
+  /* 表格下方：声骸合鸣套装建议（注意行弱化显示） */
+  .res-lines { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+  .res-line { font-size:13px; color:#e8d4a0; line-height:1.9; }
+  .res-line.note { font-size:12px; color:#9aa3b5; }
+  .res-icon {
+    width:20px; height:20px; object-fit:contain;
+    vertical-align:-5px; margin:0 3px 0 1px;
+  }
+  /* 右侧首位声骸（支持多选声骸，立绘并排） */
+  .build-echo {
+    flex-shrink:0; width:250px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; text-align:center; padding:10px 6px;
+    border-left:1px solid #232b39;
+  }
+  .build-echo-text { font-size:14px; color:#d8dce4; line-height:1.9; }
+  .build-echo-text b { color:#c9a24b; font-size:15px; letter-spacing:1px; }
+  .build-echo-imgs { display:flex; gap:10px; align-items:center; }
+  .build-echo-imgs img {
+    width:140px; height:140px; object-fit:contain; border-radius:50%;
+    border:2px solid rgba(201,162,75,.5); background:rgba(0,0,0,.3);
+    box-shadow:0 0 24px rgba(201,162,75,.18);
+  }
+  .build-echo-imgs.multiple img { width:105px; height:105px; }
+
+  .empty-tip { text-align:center; padding:100px 20px; color:#7a8499; font-size:15px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">
+    <a class="back-btn" href="javascript:;" onclick="window.close();">← 返回配队</a>
+    <span class="top-title" id="buildTitle">配队养成</span>
+    <span class="top-sub" id="buildSub"></span>
+  </div>
+  <div id="buildContent"></div>
+</div>
+
+<script>
+/* ============ 配队养成数据库（逐步补充） ============
+   角色养成模版定义为常量，跨配队复用；
+   每个主C按配队序号（team=0/1/...，对应配队页顺序）组合成套 */
+function row(name, stats, echoName, echoDir, resonance) {
+  const r = {
+    name: name,
+    portrait: '/res/Project/角色养成/' + encodeURIComponent(name) + '.webp?v=4',
+    stats: stats,
+    resonance: resonance || []
+  };
+  if (echoName) {
+    r.echo = {
+      name: echoName,
+      img: '/res/Project/声骸/' + (echoDir || '海啸级') + '/' + encodeURIComponent(echoName) + '.png'
+    };
+  }
+  return r;
+}
+
+/* 双首位声骸：替换 echo 为多选数组 */
+function dualEcho(r, name2, dir2) {
+  const first = r.echo;
+  r.echo = [
+    first,
+    { name: name2, img: '/res/Project/声骸/' + (dir2 || '海啸级') + '/' + encodeURIComponent(name2) + '.png' }
+  ];
+  return r;
+}
+
+/* 合鸣套装建议文案：《合鸣效果名》 会被替换为 图标+名称 */
+const RES_YYXL  = ['声骸合鸣套装建议携带 《羽落空尘之歌》 的 43311组合'];
+const RES_FLL   = ['声骸合鸣套装建议携带 《失序彼岸之梦》x3 + (《幽夜隐匿之帷》x2 / 《沉日劫明》x2) 的 43311组合'];
+const RES_QIANXIA = ['声骸合鸣套装建议携带 《命理崩毁之弦》x3 + (《幽夜隐匿之帷》x2 / 《沉日劫明》x2 / 《不绝余音》x2 / 《高天共奏之曲》x2 / 《轻云出月》x2 / 《无惧浪涛之勇》x2) 的 43311'];
+const RES_SS    = ['声骸合鸣套装建议携带 《羽落空尘之歌》 的 34311组合'];
+const RES_MTF   = ['声骸合鸣套装建议携带 《轻云出月》 或 《高天共奏之曲》 的 43311组合'];
+const RES_SAR   = ['声骸合鸣套装建议携带 《隐世回光》 的 43311 / 43111组合'];
+const RES_LSL   = ['霜渐队声骸合鸣套装建议携带 《雪落无声之愿》 的 34311组合',
+                   '声骸队声骸合鸣套装建议携带 《雪落无声之愿》 的 43311组合',
+                   '霜渐模态首位声骸建议 格洛犸图',
+                   '声骸模态首位声骸建议 共鸣回响·鸣式·虚造神型'];
+const RES_LN    = ['声骸合鸣套装建议携带 《逆光跃彩之约》 的 43311组合'];
+const RES_MN    = ['声骸合鸣套装建议携带 《星构寻辉之环》 的 43311组合'];
+const RES_DNY   = ['声骸合鸣套装建议携带 《斑驳粉饰之沫》 的 43311组合 / 《剪心辑梦之影》 的 34311组合',
+                   '注意：《剪心辑梦之影》 套装仅对于 陆·赫斯 或 清霄 所在队伍有效。',
+                   '《剪心辑梦之影》 套装首位声骸携带 迷胧幻蛾',
+                   '《斑驳粉饰之沫》 套装首位声骸携带 共鸣回响·达妮娅'];
+const RES_QINGXIAO = ['声骸合鸣套装建议携带 《清邪荡煞之心》 的 43311组合'];
+const RES_LUXI   = ['声骸合鸣套装建议携带 《碎梦亡鬼之魇》x1 + (《不绝余音》x2 / 《此间永驻之光》x2 / 《浮星祛暗》x2 / 《逆光跃彩之约》x2 / 《流金溯真之式》x2 / 《剪心辑梦之影》x2) 的 43311组合'];
+const RES_LIBEIKA = ['声骸合鸣套装建议携带 《碎梦亡鬼之魇》x1 + (《彻空冥雷》x2 / 《不绝余音》x2 / 《轻云出月》x2 / 《无惧浪涛之勇》x2) 的 43311组合'];
+const RES_WEILINAI = ['声骸合鸣套装建议携带 《隐世回光》 的 44331组合'];
+const RES_CHOUYUAN = ['声骸合鸣套装建议携带 《轻云出月》 / 《息界同调之律》x3 + 《啸谷长风》x2 的 43311组合'];
+const RES_XIGELIKA = ['声骸合鸣套装建议携带 《听唤语义之愿》 的 43311组合'];
+const RES_LUHESI = ['声骸合鸣套装建议携带 《流金溯真之式》 的 34311组合'];
+const RES_SANHUA = ['声骸合鸣套装建议携带 《轻云出月》 的 43311组合'];
+const RES_JBLN = ['声骸合鸣套装建议携带 《焚羽猎魔之影》x3 + 《奔狼燎原之焰》x2 的 34311组合'];
+const RES_LUPA = ['声骸合鸣套装建议携带 《奔狼燎原之焰》 的 43311组合'];
+const RES_YOUNUO = ['声骸合鸣套装建议携带 《荣斗铸锋之冠》x3 + (《啸谷长风》x2 / 《愿戴荣光之旅》x2 / 《流云逝尽之空》x2 / 《不绝余音》x2 / 《高天共奏之曲》x2 / 《轻云出月》x2) 的 43311组合'];
+const RES_BLT = ['声骸合鸣套装建议携带 《无惧浪涛之勇》 的 43311组合'];
+const RES_AOGUSITA = ['声骸合鸣套装建议携带 《荣斗铸锋之冠》x3 + 《彻空冥雷》x2 的 43311组合'];
+const RES_KANTLEILA = ['声骸合鸣套装建议携带 《幽夜隐匿之帷》 的 43311组合'];
+const RES_LUOKEKE = ['声骸合鸣套装建议携带 《幽夜隐匿之帷》 的 43311组合'];
+const RES_BULING = ['声骸合鸣套装建议携带 《隐世回光》 的 43311组合'];
+
+const RES_AIMISI = ['声骸合鸣套装建议携带 《长路启航之星》 的 43311组合'];
+
+const RES_KTX = ['声骸合鸣套装建议携带 《愿戴荣光之旅》 的 44111组合'];
+const RES_XK = ['声骸合鸣套装建议携带 《流云逝尽之空》 的 43311组合'];
+const RES_PBZQD = ['声骸合鸣套装建议携带 《愿戴荣光之旅》 的 43311组合'];
+
+const ROW_KATIXIYA = row('卡提希娅', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['生命','≥ 45000'],['普攻伤害','≥ 20%'],['共鸣解放','≥ 20%']], '共鸣回响·芙露德莉斯', '海啸级', RES_KTX);
+const ROW_XIAKONG = row('夏空', [['暴击','≥ 65%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['攻击','≥ 1900~2200']], '共鸣回响·芙露德莉斯', '海啸级', RES_XK);
+const ROW_PBZQIDONG = row('漂泊者·气动', [['暴击','≥ 60%'],['共鸣效率','≥ 140%'],['暴击伤害','≥ 250%'],['攻击','≥ 2000~2300'],['共鸣技能','≥ 20']], '共鸣回响·芙露德莉斯', '海啸级', RES_PBZQD);
+
+const RES_ZANNI = ['声骸合鸣套装建议携带 《此间永驻之光》 的 34311组合'];
+const RES_PBZYS = ['声骸合鸣套装建议携带 《此间永驻之光》 或 《浮星祛暗》 的 43311组合'];
+const ROW_ZANNI = row('赞妮', [['暴击','≥ 50%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 300%'],['攻击','≥ 2200~2600'],['重击伤害','≥ 20%']], '荣光节使', '巨浪级', RES_ZANNI);
+const ROW_PBZYS = (() => {
+  const r = row('漂泊者·衍射', [['暴击','≥ 60%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 260%'],['攻击','≥ 2000~2300'],['共鸣解放','≥ 20%']], '梦魇·哀声鸷', '怒涛级', RES_PBZYS);
+  r.echo = [
+    { name: '梦魇·哀声鸷', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('梦魇·哀声鸷') + '.png' },
+    { name: '哀声鸷',      img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('哀声鸷') + '.png' }
+  ];
+  return r;
+})();
+const ROW_FEIBI = (() => {
+  const r = row('菲比', [['暴击','≥ 65%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 280%'],['攻击','≥ 2100~2400']], '梦魇·哀声鸷', '怒涛级', RES_PBZYS);
+  r.echo = [
+    { name: '梦魇·哀声鸷', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('梦魇·哀声鸷') + '.png' },
+    { name: '哀声鸷',      img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('哀声鸷') + '.png' }
+  ];
+  return r;
+})();
+
+const RES_KLT = ['声骸合鸣套装建议携带 《凌冽决断之心》 的 43311组合'];
+const RES_ZHEZHI = ['声骸合鸣套装建议携带 《高天共奏之曲》 的 43311组合'];
+const RES_CHANGLI = ['声骸合鸣套装建议携带 《熔山裂谷》 的 43311组合'];
+const ROW_KELAITA = row('珂莱塔', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 297%'],['攻击','≥ 2100~2500'],['共鸣技能','≥ 20%']], '异构武装', '怒涛级', RES_KLT);
+const ROW_ZHEZHI = row('折枝', [['暴击','≥ 60%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 250%'],['攻击','≥ 1800~2200']], '赫卡忒', '海啸级', RES_ZHEZHI);
+const ROW_CHANGLI = row('长离', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['攻击','≥ 2100~2300'],['共鸣技能','≥ 20%']], '梦魇·燎照之骑', '怒涛级', RES_CHANGLI);
+const ROW_DENGDENG = row('灯灯', [['暴击','≥ 60%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 250%'],['攻击','≥ 1900~2200'],['普攻伤害','≥ 10%'],['共鸣解放','≥ 10%']], '无常凶鹭', '怒涛级', RES_SANHUA);
+const ROW_TAOQI = row('桃祈', [['共鸣效率','≥ 140%'],['防御','≥ 3000']], '鸣钟之龟', '海啸级', RES_SANHUA);
+
+const RES_CHUN = ['声骸合鸣套装建议携带 《沉日劫明》 的 43311组合'];
+const ROW_CHUN = row('椿', [['暴击','≥ 67%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 285%'],['攻击','≥ 2300~2600'],['普攻伤害','≥ 30%']], '梦魇·无冠者', '怒涛级', RES_CHUN);
+
+const RES_ANKE = ['声骸合鸣套装建议携带 《熔山裂谷》 的 43311组合'];
+/* 长离队专用布兰特模版（与嘉贝莉娜队版本数值不同） */
+const ROW_BULANTE_CL = row('布兰特', [['暴击','≥ 65%'],['共鸣效率','≥ 250%'],['暴击伤害','≥ 260%'],['攻击','≥ 1800~2100'],['普攻伤害','≥ 10%'],['重击伤害','≥ 10%'],['共鸣解放','≥ 10%']], '叹息古龙', '怒涛级', RES_BLT);
+const ROW_ANKE = (() => {
+  const r = row('安可', [['暴击','≥ 60%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 250%'],['攻击','≥ 1800~2100'],['普攻伤害','≥ 15%'],['共鸣技能','≥ 15%']], '梦魇·燎照之骑', '怒涛级', RES_ANKE);
+  r.echo = [
+    { name: '梦魇·燎照之骑', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('梦魇·燎照之骑') + '.png' },
+    { name: '燎照之骑',      img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('燎照之骑') + '.png' }
+  ];
+  return r;
+})();
+
+const ROW_YINLIN = row('吟霖', [['暴击','≥ 60%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 260%'],['攻击','≥ 1800~2100'],['共鸣解放','≥ 15%'],['共鸣技能','≥ 15%']], '无常凶鹭', '怒涛级', RES_SANHUA);
+
+const RES_JIYAN = ['声骸合鸣套装建议携带 《啸谷长风》 的 43311组合'];
+const ROW_JIYAN = (() => {
+  const r = row('忌炎', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 280%'],['攻击','≥ 2100~2300'],['重击伤害','≥ 30%']], '梦魇·飞廉之猩', '怒涛级', RES_JIYAN);
+  r.echo = [
+    { name: '梦魇·飞廉之猩', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('梦魇·飞廉之猩') + '.png' },
+    { name: '飞廉之猩',      img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('飞廉之猩') + '.png' }
+  ];
+  return r;
+})();
+
+const ROW_AIMISI  = row('爱弥斯', [['攻击','≥ 2100~2300'],['暴击','≥ 70~80%'],['暴击伤害','≥ 270%'],['共鸣效率','≥ 120%'],['共鸣解放','≥ 20%']], '辛吉勒姆', '海啸级', RES_AIMISI);
+const ROW_DANIYA  = row('达妮娅', [['攻击','≥ 2000~2300'],['暴击','≥ 70~80%'],['共鸣效率','≥ 115%'],['普攻伤害','≥ 20%'],['暴击伤害','≥ 280%'],['共鸣解放','≥ 10~20%']], '共鸣回响·达妮娅', '海啸级', RES_DNY);
+dualEcho(ROW_DANIYA, '迷胧幻蛾', '巨浪级');
+const ROW_QIANXIA = row('千咲',   [['攻击','≥ 2100~2400'],['暴击','≥ 70~80%'],['共鸣效率','≥ 125%'],['暴击伤害','≥ 270%'],['共鸣解放','≥ 30%']], '共鸣回响·鸣式·利维亚坦', '海啸级', RES_QIANXIA);
+const ROW_LINNAI  = row('琳奈',   [['攻击','≥ 2000~2300'],['暴击','≥ 70%'],['暴击伤害','≥ 260%'],['共鸣效率','≥ 125~130%'],['普攻伤害','≥ 20%']], '海维夏', '怒涛级', RES_LN);
+const ROW_MONING  = row('莫宁',   [['防御','≥ 3000'],['共鸣效率','≥ 240%'],['生命','≥ 18000']], '炉芯机骸', '怒涛级', RES_MN);
+const RES_FEXUE = ['声骸合鸣套装建议携带 《雪落无声之愿》 的 43311组合'];
+const ROW_FEIXUE  = row('绯雪',   [['攻击','≥ 2100~2400'],['暴击','≥ 75%'],['暴击伤害','≥ 270%'],['共鸣效率','≥ 120%'],['共鸣解放','≥ 35%']], '共鸣回响·鸣式·虚造神型', '海啸级', RES_FEXUE);
+const ROW_LUOSILA = row('洛瑟菈', [['攻击','≥ 2000'],['暴击','≥ 70%'],['暴击伤害','≥ 270%'],['普攻伤害','≥ 15%']], '格洛犸图', '巨浪级', RES_LSL);
+dualEcho(ROW_LUOSILA, '共鸣回响·鸣式·虚造神型', '海啸级');
+const ROW_SUISUI  = row('穗穗',   [['生命','≥ 35000'],['共鸣效率','≥ 260%']], '封庭械囿', '巨浪级', RES_SS);
+const ROW_YANGYANG_XL = row('秧秧·玄翎', [['攻击','≥ 2100~2400'],['暴击','≥ 75%'],['暴击伤害','≥ 270%'],['共鸣效率','≥ 120%'],['重击伤害','≥ 30%']], '千傀重楼', '海啸级', RES_YYXL);
+const ROW_MOTFEI  = row('莫特斐', [['攻击','≥ 2000~2200'],['暴击','≥ 60%'],['暴击伤害','≥ 240%'],['共鸣效率','≥ 150%'],['共鸣解放','≥ 20%']], '无常凶鹭', '怒涛级', RES_MTF);
+dualEcho(ROW_MOTFEI, '赫卡忒', '海啸级');
+const ROW_FOLUOLUO = row('弗洛洛', [['攻击','≥ 2200~2600'],['暴击','≥ 70%'],['暴击伤害','≥ 270%'],['共鸣效率','≥ 120%'],['共鸣技能','≥ 25%']], '梦魇·赫卡忒', '海啸级', RES_FLL);
+/* 守岸人：首位声骸二选一，双立绘并排显示 */
+const ROW_SHOUANREN = (() => {
+  const r = row('守岸人', [['生命','≥ 40000~50000'],['共鸣效率','≥ 230%'],['暴击伤害','更高追求']], '无归的谬误', '怒涛级', RES_SAR);
+  r.echo = [
+    { name: '无归的谬误', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('无归的谬误') + '.png' },
+    { name: '鸣钟之龟',   img: '/res/Project/声骸/海啸级/' + encodeURIComponent('鸣钟之龟') + '.png' }
+  ];
+  return r;
+})();
+
+const ROW_QINGXIAO = row('清霄', [['攻击','≥ 2450~2750'],['暴击','≥ 84% (0链建议100%)'],['暴击伤害','≥ 280% (0链建议 ≥ 240%)'],['共鸣效率','≥ 120%'],['共鸣解放','≥ 10%'],['重击伤害','≥ 10%']], '天傀劫煞', '怒涛级', RES_QINGXIAO);
+const ROW_LUXI   = row('露西',   [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['攻击','≥ 2100~2300'],['暴击伤害','≥ 270%'],['重击伤害','≥ 20%']], '共鸣回响·梦魇亚当·重锤', '怒涛级', RES_LUXI);
+const ROW_LIBEIKA = row('丽贝卡', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['攻击','≥ 2100~2300'],['暴击伤害','≥ 270%'],['普攻伤害','≥ 10%'],['共鸣解放','≥ 10%']], '共鸣回响·梦魇亚当·重锤', '怒涛级', RES_LIBEIKA);
+const ROW_WEILINAI = (() => {
+  const r = row('维里奈', [['共鸣效率','≥ 200%'],['生命','≥ 30000']], '鸣钟之龟', '海啸级', RES_WEILINAI);
+  r.echo = [
+    { name: '鸣钟之龟',   img: '/res/Project/声骸/海啸级/' + encodeURIComponent('鸣钟之龟') + '.png' },
+    { name: '无归的谬误', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('无归的谬误') + '.png' }
+  ];
+  return r;
+})();
+const ROW_CHOUYUAN = (() => {
+  const r = row('仇远', [['暴击','≥ 65%'],['重击伤害','≥ 20%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 260%'],['攻击','≥ 2000~2300']], '无常凶鹭', '怒涛级', RES_CHOUYUAN);
+  r.echo = [
+    { name: '无常凶鹭',         img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('无常凶鹭') + '.png' },
+    { name: '共鸣回响·芬莱克', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('共鸣回响·芬莱克') + '.png' }
+  ];
+  return r;
+})();
+const ROW_XIGELIKA = row('西格莉卡', [['暴击','≥ 60%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 285%'],['攻击','≥ 2100~2400']], '无铭探索者', '怒涛级', RES_XIGELIKA);
+const ROW_LUHESI = row('陆·赫斯', [['暴击','≥ 65%'],['共鸣效率','≥ 130%'],['暴击伤害','≥ 270%'],['攻击','≥ 2200~2500'],['普攻伤害','≥ 25%']], '双极·星升辉铳', '巨浪级', RES_LUHESI);
+const ROW_SANHUA = row('散华', [['暴击','≥ 60%'],['共鸣效率','≥ 150%'],['暴击伤害','≥ 250%'],['攻击','≥ 2000~2200'],['重击伤害','≥ 20%']], '无常凶鹭', '怒涛级', RES_SANHUA);
+const ROW_JIABEILINA = row('嘉贝莉娜', [['暴击','≥ 65%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 290%'],['攻击','≥ 2000~2400'],['重击伤害','≥ 20%']], '蚀脊龙', '巨浪级', RES_JBLN);
+const ROW_LUPA = row('露帕', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['攻击','≥ 2100~2400'],['共鸣解放','≥ 25%']], '荣耀狮像', '怒涛级', RES_LUPA);
+const ROW_YOUNUO = row('尤诺', [['暴击','≥ 75%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['攻击','≥ 2100~2400'],['共鸣解放','≥ 25%']], '海之女', '怒涛级', RES_YOUNUO);
+const ROW_BULANTE = row('布兰特', [['暴击','≥ 75%'],['共鸣效率','≥ 250%'],['暴击伤害','≥ 250%'],['攻击','≥ 2100~2400'],['普攻伤害','≥ 20%']], '叹息古龙', '怒涛级', RES_BLT);
+const ROW_AOGUSITA = row('奥古斯塔', [['暴击','≥ 75%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 250%'],['攻击','≥ 2400~2900'],['重击伤害','≥ 20%']], '伪作的神王', '怒涛级', RES_AOGUSITA);
+const ROW_KANTLEILA = row('坎特蕾拉', [['暴击','≥ 60%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 260%'],['攻击','≥ 2000~2300'],['普攻伤害','≥ 20%']], '罗蕾莱', '怒涛级', RES_KANTLEILA);
+const ROW_LUOKEKE = row('洛可可', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 220%'],['攻击','≥ 2000~2300'],['重击伤害','≥ 20%']], '梦魇·无常凶鹭', '怒涛级', RES_LUOKEKE);
+const RES_JINXI = ['声骸合鸣套装建议携带 《浮星祛暗》 的 43311组合'];
+const ROW_JINXI = row('今汐', [['暴击','≥ 70%'],['共鸣效率','≥ 120%'],['暴击伤害','≥ 270%'],['攻击','≥ 2100~2500'],['共鸣技能','≥ 25%']], '角', '海啸级', RES_JINXI);
+const ROW_BULING = (() => {
+  const r = row('卜灵', [['共鸣效率','≥ 150%']], '无归的谬误', '怒涛级', RES_BULING);
+  r.echo = [
+    { name: '无归的谬误', img: '/res/Project/声骸/怒涛级/' + encodeURIComponent('无归的谬误') + '.png' },
+    { name: '鸣钟之龟',   img: '/res/Project/声骸/海啸级/' + encodeURIComponent('鸣钟之龟') + '.png' }
+  ];
+  return r;
+})();
+
+const BG_AIMISI = '/res/Background/' + encodeURIComponent('爱弥斯') + '.png';
+const BG_FEIXUE = '/res/Background/' + encodeURIComponent('绯雪') + '.png';
+const BG_YANGYANG_XL = '/res/Background/' + encodeURIComponent('秧秧·玄翎') + '.png';
+const BG_QINGXIAO = '/res/Background/' + encodeURIComponent('清霄') + '.png';
+const BG_LUXI = '/res/Background/' + encodeURIComponent('露西') + '.png';
+const BG_XIGELIKA = '/res/Background/' + encodeURIComponent('西格莉卡') + '.png';
+const BG_LUHESI = '/res/Background/' + encodeURIComponent('陆·赫斯') + '.png';
+const BG_JIABEILINA = '/res/Background/' + encodeURIComponent('嘉贝莉娜') + '.png';
+const BG_AOGUSITA = '/res/Background/' + encodeURIComponent('奥古斯塔') + '.png';
+const BG_FOLUOLUO = '/res/Background/' + encodeURIComponent('弗洛洛') + '.png';
+const BG_KATIXIYA = '/res/Background/' + encodeURIComponent('卡提希娅') + '.png';
+const BG_ZANNI = '/res/Background/' + encodeURIComponent('赞妮') + '.png';
+const BG_CHUN = '/res/Background/' + encodeURIComponent('椿') + '.png';
+const BG_CHANGLI = '/res/Background/' + encodeURIComponent('长离') + '.png';
+const BG_JINXI = '/res/Background/' + encodeURIComponent('今汐') + '.png';
+const BG_JIYAN = '/res/Background/' + encodeURIComponent('忌炎') + '.png';
+const BG_KELAITA = '/res/Background/' + encodeURIComponent('珂莱塔') + '.png';
+
+const BUILD_DATA = {
+  '爱弥斯': [
+    /* 配队一 · 聚爆体系（爱弥斯/达妮娅/千咲） */
+    { background: BG_AIMISI, rows: [ROW_AIMISI, ROW_DANIYA, ROW_QIANXIA] },
+    /* 配队二 · 震谐体系（爱弥斯/琳奈/莫宁） */
+    { background: BG_AIMISI, rows: [ROW_AIMISI, ROW_LINNAI, ROW_MONING] }
+  ],
+  '绯雪': [
+    /* 配队一 · 冷凝体系（绯雪/洛瑟菈/穗穗） */
+    { background: BG_FEIXUE, rows: [ROW_FEIXUE, ROW_LUOSILA, ROW_SUISUI] },
+    /* 配队二 · 冷凝虚湮体系（绯雪/洛瑟菈/千咲） */
+    { background: BG_FEIXUE, rows: [ROW_FEIXUE, ROW_LUOSILA, ROW_QIANXIA] },
+    /* 配队三 · 冷凝震谐体系（绯雪/琳奈/千咲） */
+    { background: BG_FEIXUE, rows: [ROW_FEIXUE, ROW_LINNAI, ROW_QIANXIA] },
+    /* 配队四 · 震谐偏谐体系（绯雪/琳奈/莫宁） */
+    { background: BG_FEIXUE, rows: [ROW_FEIXUE, ROW_LINNAI, ROW_MONING] }
+  ],
+  '秧秧·玄翎': [
+    /* 配队一 · 湮灭体系（秧秧·玄翎/弗洛洛/千咲） */
+    { background: BG_YANGYANG_XL, rows: [ROW_YANGYANG_XL, ROW_FOLUOLUO, ROW_QIANXIA] },
+    /* 配队二 · 湮灭生存体系（秧秧·玄翎/穗穗/千咲） */
+    { background: BG_YANGYANG_XL, rows: [ROW_YANGYANG_XL, ROW_SUISUI, ROW_QIANXIA] },
+    /* 配队三 · 重击增伤体系（秧秧·玄翎/穗穗/莫特斐） */
+    { background: BG_YANGYANG_XL, rows: [ROW_YANGYANG_XL, ROW_SUISUI, ROW_MOTFEI] },
+    /* 配队四 · 湮灭守护体系（秧秧·玄翎/千咲/守岸人） */
+    { background: BG_YANGYANG_XL, rows: [ROW_YANGYANG_XL, ROW_QIANXIA, ROW_SHOUANREN] }
+  ],
+  '清霄': [
+    /* 配队一 · 集谐体系（清霄/达妮娅/莫宁） */
+    { background: BG_QINGXIAO, rows: [ROW_QINGXIAO, ROW_DANIYA, ROW_MONING] },
+    /* 配队二 · 集谐体系（清霄/琳奈/莫宁） */
+    { background: BG_QINGXIAO, rows: [ROW_QINGXIAO, ROW_LINNAI, ROW_MONING] }
+  ],
+  '露西': [
+    /* 配队一 · 骇破守护体系（露西/丽贝卡/守岸人） */
+    { background: BG_LUXI, rows: [ROW_LUXI, ROW_LIBEIKA, ROW_SHOUANREN] },
+    /* 配队二 · 骇破奶辅体系（露西/丽贝卡/维里奈） */
+    { background: BG_LUXI, rows: [ROW_LUXI, ROW_LIBEIKA, ROW_WEILINAI] },
+    /* 配队三 · 骇破偏谐体系（露西/丽贝卡/莫宁） */
+    { background: BG_LUXI, rows: [ROW_LUXI, ROW_LIBEIKA, ROW_MONING] }
+  ],
+  '西格莉卡': [
+    /* 配队一 · 声骸协同体系（西格莉卡/洛瑟菈·声骸模态/守岸人） */
+    { background: BG_XIGELIKA, rows: [ROW_XIGELIKA, ROW_LUOSILA, ROW_SHOUANREN] },
+    /* 配队二 · 声骸增伤体系（西格莉卡/仇远/守岸人） */
+    { background: BG_XIGELIKA, rows: [ROW_XIGELIKA, ROW_CHOUYUAN, ROW_SHOUANREN] }
+  ],
+  '陆·赫斯': [
+    /* 配队一 · 集谐普攻体系（陆·赫斯/莫宁/达妮娅·集谐偏移） */
+    { background: BG_LUHESI, rows: [ROW_LUHESI, ROW_MONING, ROW_DANIYA] },
+    /* 配队二 · 集谐冷凝体系（陆·赫斯/散华/莫宁） */
+    { background: BG_LUHESI, rows: [ROW_LUHESI, ROW_SANHUA, ROW_MONING] },
+    /* 配队三 · 集谐震谐体系（陆·赫斯/琳奈·集谐偏移/莫宁） */
+    { background: BG_LUHESI, rows: [ROW_LUHESI, ROW_LINNAI, ROW_MONING] }
+  ],
+  '嘉贝莉娜': [
+    /* 配队一 · 热熔重击体系（嘉贝莉娜/莫特斐/维里奈） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_MOTFEI, ROW_WEILINAI] },
+    /* 配队二 · 声骸增伤体系（嘉贝莉娜/仇远/守岸人） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_CHOUYUAN, ROW_SHOUANREN] },
+    /* 配队三 · 热熔聚爆体系（嘉贝莉娜/露帕/莫宁） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_LUPA, ROW_MONING] },
+    /* 配队四 · 重击增伤体系（嘉贝莉娜/尤诺/守岸人） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_YOUNUO, ROW_SHOUANREN] },
+    /* 配队五 · 聚爆守护体系（嘉贝莉娜/露帕/守岸人） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_LUPA, ROW_SHOUANREN] },
+    /* 配队六 · 三热熔体系（嘉贝莉娜/布兰特/露帕） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_BULANTE, ROW_LUPA] },
+    /* 配队七 · 湮灭混编体系（嘉贝莉娜/弗洛洛/守岸人） */
+    { background: BG_JIABEILINA, rows: [ROW_JIABEILINA, ROW_FOLUOLUO, ROW_SHOUANREN] }
+  ],
+  '奥古斯塔': [
+    /* 配队一 · 导电重击体系（奥古斯塔/莫特斐/守岸人） */
+    { background: BG_AOGUSITA, rows: [ROW_AOGUSITA, ROW_MOTFEI, ROW_SHOUANREN] },
+    /* 配队二 · 重击协同体系（奥古斯塔/尤诺/琳奈·集谐偏移） */
+    { background: BG_AOGUSITA, rows: [ROW_AOGUSITA, ROW_YOUNUO, ROW_LINNAI] },
+    /* 配队三 · 重击守护体系（奥古斯塔/尤诺/守岸人） */
+    { background: BG_AOGUSITA, rows: [ROW_AOGUSITA, ROW_YOUNUO, ROW_SHOUANREN] }
+  ],
+  '弗洛洛': [
+    /* 配队一 · 声骸守护体系（弗洛洛/坎特蕾拉/守岸人） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_SHOUANREN] },
+    /* 配队二 · 声骸治疗体系（弗洛洛/坎特蕾拉/卜灵） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_BULING] },
+    /* 配队三 · 声骸增伤体系（弗洛洛/坎特蕾拉/仇远） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_CHOUYUAN] },
+    /* 配队四 · 声骸协同体系（弗洛洛/坎特蕾拉/洛瑟菈·声骸模态） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_LUOSILA] },
+    /* 配队五 · 声骸爆发体系（弗洛洛/坎特蕾拉/今汐） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_JINXI] },
+    /* 配队六 · 声骸聚怪体系（弗洛洛/坎特蕾拉/洛可可） */
+    { background: BG_FOLUOLUO, rows: [ROW_FOLUOLUO, ROW_KANTLEILA, ROW_LUOKEKE] }
+  ],
+  '卡提希娅': [
+    /* 配队一 · 气动体系（卡提希娅/漂泊者·气动/散华） */
+    { background: BG_KATIXIYA, rows: [ROW_KATIXIYA, ROW_PBZQIDONG, ROW_SANHUA] },
+    /* 配队二 · 气动协同体系（卡提希娅/漂泊者·气动/夏空） */
+    { background: BG_KATIXIYA, rows: [ROW_KATIXIYA, ROW_PBZQIDONG, ROW_XIAKONG] },
+    /* 配队三 · 气动守护体系（卡提希娅/夏空/守岸人） */
+    { background: BG_KATIXIYA, rows: [ROW_KATIXIYA, ROW_XIAKONG, ROW_SHOUANREN] },
+    /* 配队四 · 气动生存体系（卡提希娅/夏空/千咲） */
+    { background: BG_KATIXIYA, rows: [ROW_KATIXIYA, ROW_XIAKONG, ROW_QIANXIA] },
+    /* 配队五 · 气动混编体系（卡提希娅/千咲/散华） */
+    { background: BG_KATIXIYA, rows: [ROW_KATIXIYA, ROW_QIANXIA, ROW_SANHUA] }
+  ],
+  '赞妮': [
+    /* 配队一 · 衍射体系（赞妮/菲比/漂泊者·衍射） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_FEIBI, ROW_PBZYS] },
+    /* 配队二 · 衍射守护体系（赞妮/菲比/守岸人） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_FEIBI, ROW_SHOUANREN] },
+    /* 配队三 · 衍射奶辅体系（赞妮/菲比/维里奈） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_FEIBI, ROW_WEILINAI] },
+    /* 配队四 · 衍射续航体系（赞妮/漂泊者·衍射/维里奈） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_PBZYS, ROW_WEILINAI] },
+    /* 配队五 · 重击增伤体系（赞妮/菲比/尤诺） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_FEIBI, ROW_YOUNUO] },
+    /* 配队六 · 衍射生存体系（赞妮/菲比/千咲） */
+    { background: BG_ZANNI, rows: [ROW_ZANNI, ROW_FEIBI, ROW_QIANXIA] }
+  ],
+  '珂莱塔': [
+    /* 配队一 · 冷凝体系（珂莱塔/折枝/守岸人） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_ZHEZHI, ROW_SHOUANREN] },
+    /* 配队二 · 冷凝奶辅体系（珂莱塔/折枝/维里奈） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_ZHEZHI, ROW_WEILINAI] },
+    /* 配队三 · 冷凝副C体系（珂莱塔/散华/守岸人） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_SANHUA, ROW_SHOUANREN] },
+    /* 配队四 · 冷凝热熔体系（珂莱塔/长离/守岸人） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_CHANGLI, ROW_SHOUANREN] },
+    /* 配队五 · 冷凝导电体系（珂莱塔/灯灯/维里奈） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_DENGDENG, ROW_WEILINAI] },
+    /* 配队六 · 导电协同体系（珂莱塔/守岸人/奥古斯塔） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_SHOUANREN, ROW_AOGUSITA] },
+    /* 配队七 · 冷凝生存体系（珂莱塔/守岸人/桃祈） */
+    { background: BG_KELAITA, rows: [ROW_KELAITA, ROW_SHOUANREN, ROW_TAOQI] }
+  ],
+  '椿': [
+    /* 配队一（椿/散华/维里奈） */
+    { background: BG_CHUN, rows: [ROW_CHUN, ROW_SANHUA, ROW_WEILINAI] },
+    /* 配队二（椿/洛可可/维里奈） */
+    { background: BG_CHUN, rows: [ROW_CHUN, ROW_LUOKEKE, ROW_WEILINAI] },
+    /* 配队三（椿/散华/守岸人） */
+    { background: BG_CHUN, rows: [ROW_CHUN, ROW_SANHUA, ROW_SHOUANREN] },
+    /* 配队四（椿/洛可可/守岸人） */
+    { background: BG_CHUN, rows: [ROW_CHUN, ROW_LUOKEKE, ROW_SHOUANREN] },
+    /* 配队五（椿/弗洛洛/守岸人） */
+    { background: BG_CHUN, rows: [ROW_CHUN, ROW_FOLUOLUO, ROW_SHOUANREN] }
+  ],
+  '长离': [
+    /* 配队一（长离/露帕/维里奈） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_LUPA, ROW_WEILINAI] },
+    /* 配队二（长离/今汐/维里奈） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_JINXI, ROW_WEILINAI] },
+    /* 配队三（长离/布兰特/露帕） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_BULANTE_CL, ROW_LUPA] },
+    /* 配队四（长离/散华/维里奈） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_SANHUA, ROW_WEILINAI] },
+    /* 配队五（长离/布兰特/散华） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_BULANTE_CL, ROW_SANHUA] },
+    /* 配队六（长离/露帕/守岸人） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_LUPA, ROW_SHOUANREN] },
+    /* 配队七（长离/安可/维里奈） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_ANKE, ROW_WEILINAI] },
+    /* 配队八（长离/安可/露帕） */
+    { background: BG_CHANGLI, rows: [ROW_CHANGLI, ROW_ANKE, ROW_LUPA] }
+  ],
+  '今汐': [
+    /* 配队一（今汐/吟霖/维里奈） */
+    { background: BG_JINXI, rows: [ROW_JINXI, ROW_YINLIN, ROW_WEILINAI] },
+    /* 配队二（今汐/莫特斐/维里奈） */
+    { background: BG_JINXI, rows: [ROW_JINXI, ROW_MOTFEI, ROW_WEILINAI] },
+    /* 配队三（今汐/坎特蕾拉/维里奈） */
+    { background: BG_JINXI, rows: [ROW_JINXI, ROW_KANTLEILA, ROW_WEILINAI] },
+    /* 配队四（今汐/折枝/维里奈） */
+    { background: BG_JINXI, rows: [ROW_JINXI, ROW_ZHEZHI, ROW_WEILINAI] },
+    /* 配队五（今汐/长离/维里奈） */
+    { background: BG_JINXI, rows: [ROW_JINXI, ROW_CHANGLI, ROW_WEILINAI] }
+  ],
+  '忌炎': [
+    /* 配队一（忌炎/莫特斐/维里奈） */
+    { background: BG_JIYAN, rows: [ROW_JIYAN, ROW_MOTFEI, ROW_WEILINAI] },
+    /* 配队二（忌炎/尤诺/守岸人） */
+    { background: BG_JIYAN, rows: [ROW_JIYAN, ROW_YOUNUO, ROW_SHOUANREN] }
+  ]
+};
+
+/* 禁止拖动图片资源（CSS 之外的 JS 兜底） */
+document.addEventListener('dragstart', (e) => { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); });
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function main() {
+  const mainName = new URLSearchParams(location.search).get('main') || '';
+  document.getElementById('buildTitle').textContent = mainName ? mainName + ' · 配队养成' : '配队养成';
+  const data = BUILD_DATA[mainName];
+  const teamIdx = parseInt(new URLSearchParams(location.search).get('team') || '0', 10) || 0;
+  const builds = Array.isArray(data) ? data : (data ? [data] : null);
+  const build = builds ? (builds[teamIdx] || builds[0]) : null;
+  const box = document.getElementById('buildContent');
+
+  /* 设置页面背景图（加深色蒙层保证可读性；爱弥斯背景较亮，蒙层单独加深到75%，其余55%） */
+  if (build && build.background) {
+    const dim = (mainName === '爱弥斯' || mainName === '弗洛洛' || mainName === '赞妮' || mainName === '椿' || mainName === '长离' || mainName === '今汐') ? .75 : .55;
+    document.body.style.backgroundImage =
+      'linear-gradient(rgba(10,13,19,' + dim + '),rgba(10,13,19,' + dim + ')),url("' + build.background + '")';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center top';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundRepeat = 'no-repeat';
+  }
+
+  const rows = build ? build.rows : null;
+  if (!rows) {
+    box.innerHTML = '<div class="empty-tip">「' + escapeHtml(mainName) + '」的配队养成模版正在整理中，敬请期待。<br><br>目前已开放：爱弥斯 · 绯雪 · 秧秧·玄翎 · 清霄 · 露西 · 西格莉卡 · 陆·赫斯 · 嘉贝莉娜 · 奥古斯塔 · 弗洛洛 · 卡提希娅 · 赞妮 · 珂莱塔 · 椿 · 长离 · 今汐 · 忌炎</div>';
+    return;
+  }
+  document.getElementById('buildSub').textContent = rows.length + ' 名角色养成模版';
+
+  let html = '';
+  rows.forEach(row => {
+    /* 属性模版表格（Markdown 模版渲染） */
+    let table = '<table class="stat-table"><tr><th>属性</th><th>数值</th></tr>';
+    row.stats.forEach(([k, v]) => {
+      table += '<tr><td class="attr">' + escapeHtml(k) + '</td><td class="val">' + escapeHtml(v) + '</td></tr>';
+    });
+    table += '</table>';
+
+    /* 声骸合鸣套装建议（《名称》替换为图标+名称） */
+    let resHtml = '';
+    (row.resonance || []).forEach(line => {
+      const isNote = line.startsWith('注意');
+      const body = escapeHtml(line).replace(/《([^》]+)》/g, (m, n) =>
+        '<img class="res-icon" src="/res/Project/合鸣效果/' + encodeURIComponent(n) + '.png" alt="' + n + '" title="' + n + '" onerror="this.style.display=\'none\'">' + n
+      );
+      resHtml += '<div class="res-line' + (isNote ? ' note' : '') + '">' + body + '</div>';
+    });
+
+    html += '<div class="build-row">';
+    html += '<div class="build-portrait"><img src="' + row.portrait + '" data-full="/res/Project/角色/' + encodeURIComponent(row.name) + '.webp" onerror="if(this.dataset.full){this.src=this.dataset.full;this.dataset.full=\'\'}" alt="' + escapeHtml(row.name) + '"><div class="build-portrait-name">' + escapeHtml(row.name) + '</div></div>';
+    html += '<div class="build-mid"><div class="build-name">' + escapeHtml(row.name) + ' · 养成模版</div>' + table + (resHtml ? '<div class="res-lines">' + resHtml + '</div>' : '') + '</div>';
+    const echoes = row.echo ? (Array.isArray(row.echo) ? row.echo : [row.echo]) : null;
+    if (echoes) {
+      const echoNames = echoes.map(e => e.name).join(' / ');
+      html += '<div class="build-echo"><div class="build-echo-text">首位声骸建议携带<br><b>' + escapeHtml(echoNames) + '</b></div>';
+      html += '<div class="build-echo-imgs' + (echoes.length > 1 ? ' multiple' : '') + '">';
+      echoes.forEach(e => {
+        html += '<img src="' + e.img + '" alt="' + escapeHtml(e.name) + '" title="' + escapeHtml(e.name) + '" onerror="this.style.display=\'none\'">';
+      });
+      html += '</div></div>';
+    }
+    html += '</div>';
+  });
+  box.innerHTML = html;
+}
+main();
+</script>
+</body>
+</html>

@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>鸣潮助手 · Ming Echo Assistant</title>
-  <link rel="icon" href="/res/ui/app.ico" />
-  <link rel="stylesheet" href="/css/style.css?v=42" />
+  <title>鸣潮攻略站 · Wuthering Waves Guide</title>
+  <link rel="icon" href="/res/ui/app.png" />
+  <link rel="stylesheet" href="/css/style.css?v=43" />
 </head>
 <body>
   <!-- 顶栏 -->
   <header class="topbar">
     <div class="brand">
       <div class="brand-text">
-        <span class="brand-title">鸣潮助手</span>
-        <span class="brand-sub">MING ECHO ASSISTANT</span>
+        <span class="brand-title">鸣潮攻略站</span>
+          <span class="brand-sub">Wuthering Waves Guide</span>
       </div>
-    </div>
-    <div class="top-right">
-      <span id="headerChip" class="chip chip-off">模型未连接</span>
     </div>
   </header>
 
@@ -25,16 +22,14 @@
   <div class="body">
     <!-- 左导航 -->
     <nav class="navrail">
-      <button class="nav-btn active" data-view="chat">智能助手</button>
-      <button class="nav-btn" data-view="score">声骸评分</button>
-      <button class="nav-btn" data-view="db">数据库</button>
-      <button class="nav-btn" data-view="status">运行状态</button>
       <button class="nav-btn" data-view="game">游戏账户</button>
       <button class="nav-btn" data-view="chars">角色信息</button>
       <button class="nav-btn" data-view="holo">全息战略</button>
       <button class="nav-btn" data-view="tower">逆境深塔</button>
       <button class="nav-btn" data-view="abyss">无尽湍渊</button>
       <button class="nav-btn" data-view="matrix">终焉矩阵</button>
+      <button class="nav-btn" data-view="team">角色配队</button>
+      <button class="nav-btn" data-view="gacha">抽卡记录</button>
       <button class="nav-btn" data-view="about">关于此项目</button>
       <div class="nav-spacer"></div>
       <div class="version">许可协议：<a href="/gpl3.html" target="_blank" style="color:var(--gold);text-decoration:none">GNU General Public License v3.0 (GPL-3.0)</a></div>
@@ -42,83 +37,6 @@
 
     <!-- 页面区 -->
     <main class="content">
-
-      <!-- ============ 智能助手 ============ -->
-      <section id="view-chat" class="view">
-        <div class="panel-head">
-          <div>
-            <h2 class="card-title">智能助手</h2>
-            <p class="card-hint" id="chatModelHint">云端多模态 · 加载中…</p>
-          </div>
-        </div>
-        <div class="chat-scroll" id="chatScroll">
-          <div class="chat-list" id="chatList">
-          </div>
-        </div>
-        <div class="chips-row" id="chipsRow"></div>
-        <div class="input-card">
-          <div class="toolbar">
-            <button class="btn ghost" id="imgBtn">＋ 添加图片 / 粘贴截图</button>
-            <span class="spacer"></span>
-            <button class="btn danger" id="stopBtn" style="display:none">停止生成</button>
-          </div>
-          <textarea id="chatInput" placeholder="输入问题，或粘贴游戏截图（Ctrl+V），模型会看图回答…（Enter 发送 / Shift+Enter 换行）"></textarea>
-          <div class="input-bottom">
-            <span class="spacer"></span>
-            <button class="btn primary" id="sendBtn">发送</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- ============ 声骸评分 ============ -->
-      <section id="view-score" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">声骸评分</h2>
-          <p class="card-hint">选择角色 → 粘贴面板与声骸词条 → 评分 / 推荐</p>
-        </div>
-        <div class="score-layout">
-          <div class="score-left">
-            <div class="card portrait-card">
-              <img id="portraitImg" src="/res/Project/角色/今汐.webp" alt="portrait" onerror="this.style.display='none'" />
-              <div class="portrait-name" id="portraitName">今汐</div>
-            </div>
-          </div>
-          <div class="score-right">
-            <div class="card target-card">
-              <div class="card-title small">目标面板</div>
-              <div id="targetText" class="target-text">加载中…</div>
-            </div>
-            <div class="card">
-              <div class="card-title small">角色</div>
-              <div class="cselect" id="charSelectBox">
-                <button type="button" class="cselect-head" id="charSelectHead" aria-haspopup="listbox">
-                  <span id="charSelectVal">请选择角色</span>
-                  <span class="cselect-arrow">▾</span>
-                </button>
-                <div class="cselect-drop" id="charSelectDrop">
-                  <input type="text" id="charSearch" class="cselect-search" placeholder="输入角色名筛选…" autocomplete="off" />
-                  <div class="cselect-list" id="charList"></div>
-                </div>
-              </div>
-            </div>
-            <div class="card">
-              <div class="card-title small">角色主面板</div>
-              <textarea id="panelText" class="textarea" placeholder="例：暴击率 58% 暴击伤害 280% 攻击 2500 共鸣效率 118%"></textarea>
-            </div>
-            <div class="card">
-              <div class="card-title small">单个声骸评分（选填）</div>
-              <textarea id="echoText" class="textarea" placeholder="例：暴击率 21% 暴击伤害 28% 攻击 10% 共鸣效率 15%（不填则只评面板）"></textarea>
-            </div>
-            <div class="score-actions">
-              <button class="btn primary" id="scoreBtn">评分</button>
-              <button class="btn ghost" id="recommendBtn">养成推荐</button>
-              <span class="spacer"></span>
-              <span id="scoreBusy" class="card-hint hidden">计算中…</span>
-            </div>
-            <div id="scoreResult"></div>
-          </div>
-        </div>
-      </section>
 
       <!-- ============ 数据库 ============ -->
       <section id="view-db" class="view hidden">
@@ -186,11 +104,7 @@
 
       <!-- ============ 游戏账户 ============ -->
       <section id="view-game" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">游戏账户</h2>
-          <p class="card-hint">连接库街区账号，同步角色、声骸与面板数据</p>
-        </div>
-
+        
         <!-- 连接配置 -->
         <div class="card" id="kuroConnectCard">
           <div class="card-title">库街区连接</div>
@@ -247,11 +161,7 @@
 
       <!-- ============ 角色信息 ============ -->
       <section id="view-chars" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">角色信息</h2>
-          <p class="card-hint">查看已连接账号的角色列表、面板属性与声骸配置</p>
-        </div>
-
+        
         <!-- 角色列表 -->
         <div class="card" id="kuroCharListCard" style="display:none">
           <div class="card-title">我的角色 <span id="kuroCharCount" class="card-hint" style="font-size:13px"></span></div>
@@ -262,7 +172,7 @@
         <div class="card" id="kuroCharDetailCard" style="display:none">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div class="card-title" id="kuroDetailTitle" style="margin:0">角色详情</div>
-            <button id="kuroScoreBtn" style="display:none;padding:6px 16px;background:linear-gradient(135deg,#c9a24b,#a8862f);color:#0a0d13;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">评分</button>
+           
           </div>
           <div id="kuroCharDetail"></div>
         </div>
@@ -270,11 +180,7 @@
 
       <!-- ============ 全息战略 ============ -->
       <section id="view-holo" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">全息战略</h2>
-          <p class="card-hint">查看各模式 Boss 的全息1-6难度通关记录</p>
-        </div>
-
+        
         <!-- 全息战略内容 -->
         <div class="card">
           <div id="holoStatus" style="padding:12px;color:var(--text3);font-size:13px">正在加载挑战数据…</div>
@@ -284,11 +190,7 @@
 
       <!-- ============ 逆境深塔 ============ -->
       <section id="view-tower" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">逆境深塔</h2>
-          <p class="card-hint">逆境之塔·深境区 — 残响之塔 / 深境之塔 / 回音之塔</p>
-        </div>
-        <div class="card">
+                <div class="card">
           <div id="towerStatus" style="padding:12px;color:var(--text3);font-size:13px">正在加载深塔数据…</div>
           <div id="towerContent" style="display:none"></div>
         </div>
@@ -296,13 +198,8 @@
 
       <!-- ============ 无尽湍渊 ============ -->
       <section id="view-abyss" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">无尽湍渊</h2>
-          <p class="card-hint">海墟瑞渊 · 上半/下半积分挑战</p>
-        </div>
-        <div class="card">
+                <div class="card">
           <div style="padding:30px 20px;text-align:center">
-            <div style="font-size:48px;margin-bottom:16px;opacity:.3">🌊</div>
             <div style="font-size:16px;color:var(--gold);margin-bottom:10px;font-weight:600">数据暂未开放</div>
             <div style="font-size:13px;color:var(--text2);line-height:1.8;max-width:500px;margin:0 auto">
               库街区 API 目前未开放「无尽湍渊」的玩家分数与出战队伍数据。<br>
@@ -315,13 +212,8 @@
 
       <!-- ============ 终焉矩阵 ============ -->
       <section id="view-matrix" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">终焉矩阵</h2>
-          <p class="card-hint">限时挑战 · 矩阵积分与编队记录</p>
-        </div>
-        <div class="card">
+                <div class="card">
           <div style="padding:30px 20px;text-align:center">
-            <div style="font-size:48px;margin-bottom:16px;opacity:.3">⚡</div>
             <div style="font-size:16px;color:var(--gold);margin-bottom:10px;font-weight:600">数据暂未开放</div>
             <div style="font-size:13px;color:var(--text2);line-height:1.8;max-width:500px;margin:0 auto">
               库街区 API 目前未开放「终焉矩阵」的玩家分数与出战队伍数据。<br>
@@ -332,18 +224,71 @@
         </div>
       </section>
 
-      <!-- ============ 关于此项目 ============ -->
-      <section id="view-about" class="view hidden">
-        <div class="panel-head">
-          <h2 class="card-title">关于此项目</h2>
-          <p class="card-hint">鸣潮助手 · Ming Echo Assistant — 项目说明与致谢</p>
+      <!-- ============ 角色配队 ============ -->
+      <section id="view-team" class="view hidden">
+        <div class="card">
+          <div id="teamMainGrid" class="team-main-grid"></div>
+        </div>
+        <p style="text-align:center;color:var(--text2);font-size:12px;margin-top:14px;opacity:.75">所有手法教程均为基础，如需提供进阶手法教学可前去github仓库提交你修改后的版本到issues</p>
+      </section>
+
+      <!-- ============ 抽卡记录 ============ -->
+      <section id="view-gacha" class="view hidden">
+        <div class="card">
+          <div class="card-title">抽卡记录 · 唤取历史</div>
+          <div class="card-hint">数据来自游戏内官方唤取记录，由本地 C 后端读取与同步，仅保存在本机 gacha_data.json，不上传任何服务器。</div>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+            <input id="gachaDirInput" class="textarea" style="height:38px;min-height:38px;padding:6px 10px;flex:1;min-width:280px" placeholder="鸣潮安装目录，如 D:\Wuthering Waves" />
+            <button class="btn primary" id="gachaScanBtn">扫描日志并同步</button>
+            <button class="btn ghost" id="gachaUrlToggle">粘贴链接同步</button>
+            <button class="btn ghost" id="gachaReloadBtn">刷新记录</button>
+          </div>
+          <div id="gachaUrlBox" style="margin-top:8px;display:none">
+            <input id="gachaUrlInput" class="textarea" style="height:38px;min-height:38px;padding:6px 10px;width:100%" placeholder="https://aki-gm-resources.aki-game.com/aki/gacha/index.html#/record?..." />
+            <div style="margin-top:6px"><button class="btn primary" id="gachaUrlSyncBtn">用该链接同步</button></div>
+          </div>
+          <div class="card-hint" style="margin-top:8px">提示：扫描前请先在游戏内打开一次「唤取记录」页面，让日志写入最新链接；官方链接通常只保留近约 6 个月。</div>
+          <div id="gachaStatus" class="card-sub" style="margin-top:8px"></div>
         </div>
 
+        <div id="gachaStats" class="db-counts" style="display:none"></div>
+
+        <div class="card" id="gachaListCard" style="display:none;flex:1">
+          <div class="card-title small">唤取记录</div>
+          <div class="gacha-filters" id="gachaPoolChips"></div>
+          <div class="gacha-filter">
+            <div class="gacha-dd" id="gachaQualityDD">
+              <button type="button" class="gacha-dd-head" id="gachaQualityHead">
+                <span id="gachaQualityLabel">全部星级</span>
+                <span class="gacha-dd-arrow">▾</span>
+              </button>
+              <div class="gacha-dd-menu" id="gachaQualityMenu">
+                <button type="button" class="gacha-dd-opt active" data-q="all">全部星级</button>
+                <button type="button" class="gacha-dd-opt" data-q="5">★★★★★ 五星</button>
+                <button type="button" class="gacha-dd-opt" data-q="4">★★★★ 四星</button>
+                <button type="button" class="gacha-dd-opt" data-q="3">★★★ 三星</button>
+              </div>
+            </div>
+          </div>
+          <div id="gachaList"></div>
+          <div class="gacha-pager" id="gachaPager"></div>
+        </div>
+      </section>
+
+      <!-- ============ 关于此项目 ============ -->
+      <section id="view-about" class="view hidden">
+        
         <div class="card">
           <div class="card-title">项目简介</div>
           <p style="color:var(--text2);font-size:13px;line-height:1.9;margin:8px 0">
             鸣潮助手是一款由玩家自发开发的<b>非官方粉丝工具</b>，旨在为 PC 端玩家提供便捷的角色面板查看和声骸评分功能。
             由于库街区 PC 端暂不支持查看角色面板数据，本工具通过库街区公开 API 获取玩家自己的角色数据，并在本地进行展示与分析。
+          </p>
+          <p style="color:var(--text2);font-size:13px;line-height:1.9;margin:8px 0">
+            工具内置<b>抽卡记录</b>功能：C 后端在本机解密鸣潮游戏日志（Client.log）提取官方唤取记录链接，随后以 13 类卡池并发请求官方接口，把玩家自己的全部唤取历史保存到本地供浏览与统计。
+            该功能的链路设计参考开源项目 <b style="color:var(--gold)">wuwa-gacha-tool</b>（<a href="https://github.com/juliy819/wuwa-gacha-tool" target="_blank" style="color:var(--ice)">github.com/juliy819/wuwa-gacha-tool</a>，Apache-2.0），
+            但本项目的实现是<b>完全零第三方依赖的纯 C 语言</b>——日志解密、链接解析、接口请求（系统自带 curl.exe）、JSON 处理、并发同步全部手写于 C 后端，
+            不引入 SQLite / cJSON / libcurl，不需要 Rust / Python / Node，不安装任何第三方库。
           </p>
           <p style="color:var(--text2);font-size:13px;line-height:1.9;margin:8px 0">
             本工具<b>不修改游戏文件、不注入游戏进程、不作弊、不影响其他玩家</b>，仅作为数据查看与评分辅助工具使用。
@@ -354,8 +299,8 @@
           <div class="card-title">致谢</div>
           <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
             <p><b style="color:var(--gold)">库街区 / 库洛游戏</b> — 感谢库街区提供的角色图鉴与公开 API，本工具的角色数据、声骸数据、武器数据均来源于库街区。</p>
-            <p><b style="color:var(--ice)">Agnes AI</b> — 感谢 Agnes AI 提供的免费多模态大模型 API（agnes-2.5-flash），为本工具的智能评分、养成推荐和对话助手提供算力支持。</p>
             <p><b style="color:var(--text)">开源社区</b> — 感谢 waves-plugin 等开源项目对库街区 API 的逆向与文档化工作，为本工具的开发提供了重要参考。</p>
+            <p><b style="color:var(--text)">wuwa-gacha-tool</b> — 感谢 <a href="https://github.com/juliy819/wuwa-gacha-tool" target="_blank" style="color:var(--ice)">Juliy 的开源抽卡记录工具</a>（Apache-2.0）对唤取记录链路的探索；本工具的抽卡记录功能参考其实现思路，并以零第三方依赖的纯 C 独立重写。</p>
           </div>
         </div>
 
@@ -364,6 +309,7 @@
           <div style="margin:10px 0;line-height:2;font-size:13px;color:var(--text2)">
             <p><b>所有数据仅保存在本地，不上传任何服务器。</b></p>
             <p>• 你的库街区 Token、角色数据、声骸数据均保存在你自己的电脑本地（项目目录下的 kuro_config.json）</p>
+            <p>• 抽卡记录：游戏日志仅在本机读取解析，官方唤取记录保存在项目目录下的 gacha_data.json；提取到的链接与凭据不写入文件、不发送到除游戏官方接口以外的任何地址</p>
             <p>• 本工具不收集、不上传、不分析任何用户个人信息</p>
             <p>• Agnes AI API 调用仅传输你主动输入的评分数据和对话内容，不包含你的库街区账号凭证</p>
             <p>• 你可以随时删除 kuro_config.json 来清除所有本地数据</p>
@@ -410,23 +356,9 @@
               <p style="color:var(--text3);font-size:12px;line-height:1.8">
                 鸣潮助手 · Ming Echo Assistant v2.0<br>
                 主干开发者：你猜我在线不 · GPL v3.0 开源协议<br>
-                感谢库街区图鉴贡献 · 感谢 Agnes AI API 提供<br>
+                感谢库街区图鉴贡献<br>
                 所有数据仅保存在本地，不上传任何服务器
               </p>
-            </div>
-            <div style="text-align:center;flex-shrink:0">
-              <div style="display:flex;gap:6px;justify-content:center;align-items:center;margin-bottom:8px">
-                <div style="display:flex;flex-direction:column;gap:4px;align-items:center">
-                  <a href="https://agnes-ai.com/" target="_blank" title="Agnes AI"><img src="/res/Project/Icons/AgnesAI.png" style="width:64px;height:64px;border-radius:10px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
-                  <a href="https://www.kurobbs.com/main.html" target="_blank" title="库街区"><img src="/res/Project/Icons/库街区.png" style="width:64px;height:64px;border-radius:10px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
-                </div>
-                <div style="display:flex;gap:6px;align-items:center">
-                  <a href="https://www.doubao.com/" target="_blank" title="豆包"><img src="/res/Project/Icons/doubao.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
-                  <a href="https://chatgpt.com/" target="_blank" title="ChatGPT"><img src="/res/Project/Icons/ChatGPT.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
-                  <a href="https://claude.ai/" target="_blank" title="Claude"><img src="/res/Project/Icons/Claude.png" style="width:44px;height:44px;border-radius:8px;object-fit:contain;cursor:pointer" onerror="this.style.display='none'"></a>
-                </div>
-              </div>
-              <p style="color:var(--gold);font-size:12px;font-style:italic;margin:0">Thank your for making a difference.</p>
             </div>
           </div>
         </div>
@@ -435,14 +367,14 @@
     </main>
   </div>
 
-  <script src="/js/api.js?v=42"></script>
-  <script src="/js/chat.js?v=42"></script>
-  <script src="/js/score.js?v=42"></script>
-  <script src="/js/db.js?v=42"></script>
-  <script src="/js/status.js?v=42"></script>
-  <script src="/js/game.js?v=42"></script>
-  <script src="/js/holo.js?v=42"></script>
-  <script src="/js/tower.js?v=42"></script>
-  <script src="/js/app.js?v=42"></script>
+  <script src="/js/api.js?v=43"></script>
+  <script src="/js/db.js?v=43"></script>
+  <script src="/js/status.js?v=43"></script>
+  <script src="/js/game.js?v=43"></script>
+  <script src="/js/holo.js?v=43"></script>
+  <script src="/js/tower.js?v=43"></script>
+  <script src="/js/team.js?v=43"></script>
+  <script src="/js/gacha.js?v=43"></script>
+  <script src="/js/app.js?v=43"></script>
 </body>
 </html>

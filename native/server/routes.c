@@ -2,8 +2,10 @@
 #include "mec_config.h"
 #include "mec_cloud.h"
 #include "mec_kuro.h"
+#include "mec_gacha.h"
 #include "mec_common.h"
 #include "win_utf8.h"
+#include "echo_grade.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,6 +61,12 @@ static void serve_static(const char* root, const char* url_path, SOCKET client) 
         return;
     }
     char file_path[4096];
+    /* 根路径默认跳转到 /account（游戏账户页） */
+    if (strcmp(url_path, "/") == 0 || url_path[0] == 0) {
+        http_send_status(client, 302, "Found");
+        http_send_headers(client, "text/html; charset=utf-8", 0, "Location: /account\r\n");
+        return;
+    }
     /* /res/ -> resources/ ，/resources/ -> resources/ */
     if (strncmp(url_path, "/res/", 5) == 0) {
         snprintf(file_path, sizeof(file_path), "%s%cresources%s", root, MEC_SEP[0], url_path + 4);
@@ -274,6 +282,17 @@ void http_route(const char* root, HttpRequest* req, SOCKET client) {
         mec_json_get_string(req->body, "text", text, sizeof(text));
         char out[MEC_MAX_JSON * 4];
         int rc = mec_parse_stats_json(text, out, sizeof(out));
+        if (rc != 0 && out[0] != '{') snprintf(out, sizeof(out), "{\"ok\":false,\"error\":\"%s\"}", mec_last_error());
+        http_send_json(client, rc == 0 ? 200 : 400, out);
+        return;
+    }
+    if (strcmp(path, "/api/echo_grade") == 0 && strcmp(req->method, "POST") == 0) {
+        char character[128] = { 0 }, grade_data[16384] = { 0 };
+        if (!req->body) { http_send_error(client, 400, "no body"); return; }
+        mec_json_get_string(req->body, "character", character, sizeof(character));
+        mec_json_get_string(req->body, "data", grade_data, sizeof(grade_data));
+        char out[MEC_MAX_JSON];
+        int rc = mec_echo_grade_json(root, character, grade_data, out, sizeof(out));
         if (rc != 0 && out[0] != '{') snprintf(out, sizeof(out), "{\"ok\":false,\"error\":\"%s\"}", mec_last_error());
         http_send_json(client, rc == 0 ? 200 : 400, out);
         return;
@@ -566,6 +585,82 @@ void http_route(const char* root, HttpRequest* req, SOCKET client) {
         http_send_headers(client, "application/json; charset=utf-8", (unsigned long)strlen(resp), NULL);
         http_send_body(client, resp, (unsigned long)strlen(resp));
         free(resp);
+        return;
+    }
+
+    /* ---- 抽卡记录（参考 juliy819/wuwa-gacha-tool，纯 C 实现） ---- */
+    if (strcmp(path, "/api/gacha/config") == 0 && strcmp(req->method, "GET") == 0) {
+        /* 返回上次保存的游戏目录与最近同步时间 */
+        char dir[2048] = { 0 };
+        char cfg_path[2200];
+        snprintf(cfg_path, sizeof(cfg_path), "%s%cgacha_config.json", root ? root : ".", '\\');
+        char* cfg = NULL; unsigned long cfg_len = 0;
+        if (read_file(cfg_path, &cfg, &cfg_len) == 0) {
+            mec_json_get_string(cfg, "game_dir", dir, sizeof(dir));
+            free(cfg);
+            /* 还原 JSON 转义的双反斜杠 */
+            char* r = dir; char* w = dir;
+            while (*r) { if (r[0] == '\\' && r[1] == '\\') r++; *w++ = *r++; }
+            *w = 0;
+        }
+        char esc[4200]; int e = 0;
+        for (char* c = dir; *c && e < (int)sizeof(esc) - 2; c++) {
+            if (*c == '\\') esc[e++] = '\\';
+            esc[e++] = *c;
+        }
+        esc[e] = 0;
+        char out[4600];
+        snprintf(out, sizeof(out), "{\"ok\":true,\"game_dir\":\"%s\"}", esc);
+        http_send_json(client, 200, out);
+        return;
+    }
+    if (strcmp(path, "/api/gacha/scan") == 0 && strcmp(req->method, "POST") == 0) {
+        /* 扫描 Client.log 提取唤取记录链接（game_dir 可为空，用上次保存的目录） */
+        char game_dir[2048] = { 0 };
+        if (req->body) mec_json_get_string(req->body, "game_dir", game_dir, sizeof(game_dir));
+        char url[2048] = { 0 }, err[512] = { 0 };
+        int rc = mec_gacha_scan(root, game_dir[0] ? game_dir : NULL, url, sizeof(url), err, sizeof(err));
+        if (rc != 0) {
+            char out[1024];
+            snprintf(out, sizeof(out), "{\"ok\":false,\"error\":\"%s\"}", err);
+            http_send_json(client, 200, out);
+            return;
+        }
+        /* 链接仅本机传输；前端拿原串回传 /api/gacha/sync */
+        char esc[4200]; int e = 0;
+        for (char* c = url; *c && e < (int)sizeof(esc) - 2; c++) {
+            if (*c == '"' || *c == '\\') esc[e++] = '\\';
+            esc[e++] = *c;
+        }
+        esc[e] = 0;
+        char out[4300];
+        snprintf(out, sizeof(out), "{\"ok\":true,\"url\":\"%s\"}", esc);
+        http_send_json(client, 200, out);
+        return;
+    }
+    if (strcmp(path, "/api/gacha/sync") == 0 && strcmp(req->method, "POST") == 0) {
+        /* 用唤取记录链接同步官方接口，13 卡池全量写入 gacha_data.json */
+        if (!req->body) { http_send_error(client, 400, "no body"); return; }
+        char url[2048] = { 0 };
+        mec_json_get_string(req->body, "url", url, sizeof(url));
+        char out[4096];
+        mec_gacha_sync(root, url, out, sizeof(out));
+        http_send_json(client, 200, out);
+        return;
+    }
+    if (strcmp(path, "/api/gacha/records") == 0 && strcmp(req->method, "GET") == 0) {
+        /* 返回已同步的全部抽卡记录（gacha_data.json 原样，可能数 MB） */
+        char file_path[2200];
+        snprintf(file_path, sizeof(file_path), "%s%cgacha_data.json", root ? root : ".", '\\');
+        char* data = NULL; unsigned long len = 0;
+        if (read_file(file_path, &data, &len) != 0) {
+            http_send_json(client, 200, "{\"ok\":false,\"error\":\"尚未同步抽卡记录\",\"total\":0,\"pools\":{}}");
+            return;
+        }
+        http_send_status(client, 200, "OK");
+        http_send_headers(client, "application/json; charset=utf-8", len, NULL);
+        http_send_body(client, data, len);
+        free(data);
         return;
     }
 

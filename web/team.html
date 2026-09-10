@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="/res/ui/app.png" />
+<title>角色配队 - 鸣潮攻略站</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+/* 滚动条（与主界面一致） */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #2a3342; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3a4557; }
+::-webkit-scrollbar-track { background: transparent; }
+
+  img, * { -webkit-user-drag:none; user-select:none; -webkit-user-select:none; }
+  body {
+    background: #0a0d13;
+    background-image: radial-gradient(1200px 700px at 50% -20%, #14202e 0%, #0a0d13 60%);
+    color: #e6e8ee;
+    font-family: 'Segoe UI','Microsoft YaHei',sans-serif;
+    min-height: 100vh;
+    padding: 28px 32px 48px;
+  }
+  .wrap { max-width: 1280px; margin:0 auto; }
+
+  /* 顶部 */
+  .top-bar { display:flex; align-items:center; gap:16px; margin-bottom:26px; }
+  .back-btn {
+    display:inline-block; padding:8px 18px; border-radius:8px;
+    background:#141a26; border:1px solid #2a3346; color:#c8cdd5;
+    font-size:13px; text-decoration:none; cursor:pointer; transition:all .15s;
+  }
+  .back-btn:hover { border-color:#c9a24b; color:#c9a24b; }
+  .top-title { font-size:22px; font-weight:700; color:#c9a24b; letter-spacing:2px; }
+  .top-sub { font-size:13px; color:#7a8499; margin-left:4px; }
+
+  /* 配队卡片行 */
+  .team-row { display:flex; gap:26px; justify-content:center; flex-wrap:wrap; margin-bottom:30px; }
+
+  /* 单张竖版角色卡 */
+  .role-card {
+    position:relative; width:360px; height:560px; border-radius:14px; overflow:hidden;
+    background: rgba(18,24,34,.62);
+    border:1px solid #2e384a;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+    flex-shrink:0;
+  }
+  /* 大号序号水印 */
+  .card-index {
+    position:absolute; left:6px; top:18px; z-index:1;
+    font-family:Georgia,'Times New Roman',serif; font-size:150px; line-height:1;
+    color:rgba(255,255,255,.055); font-weight:400; user-select:none; pointer-events:none;
+  }
+  /* 装饰十字星 */
+  .deco-star { position:absolute; width:26px; height:26px; z-index:2; opacity:.5; }
+  .deco-star::before, .deco-star::after { content:''; position:absolute; background:#c9a24b; }
+  .deco-star::before { left:50%; top:0; width:1px; height:100%; transform:translateX(-50%); }
+  .deco-star::after { top:50%; left:0; height:1px; width:100%; transform:translateY(-50%); }
+  .deco-star.tl { top:14px; left:14px; }
+  /* 装饰竖线 */
+  .deco-vline { position:absolute; width:1px; background:linear-gradient(to bottom,transparent,rgba(201,162,75,.35),transparent); z-index:2; }
+  .deco-vline.left { left:40px; top:52px; height:120px; }
+  /* 点阵 */
+  .deco-dots { position:absolute; right:18px; top:60px; z-index:2; opacity:.35;
+    background-image:radial-gradient(rgba(255,255,255,.5) 1px,transparent 1px);
+    background-size:6px 6px; width:24px; height:90px; }
+
+  /* 椭圆立绘区域 */
+  .portrait-clip {
+    position:absolute; left:50%; top:52px; transform:translateX(-50%);
+    width:286px; height:380px; border-radius:50% 50% 46% 46% / 42% 42% 58% 58%;
+    overflow:hidden; z-index:3;
+    background:radial-gradient(circle at 50% 30%, rgba(111,195,223,.10), rgba(0,0,0,.25));
+    box-shadow: inset 0 0 40px rgba(0,0,0,.5);
+  }
+  /* 预处理立绘已裁成椭圆比例(572x760=2x)，直接精确铺满，一次性采样最清晰 */
+  .portrait-clip img {
+    width:100%; height:100%; object-fit:cover; object-position:center top;
+    display:block; image-rendering:auto;
+  }
+  /* 立绘底部柔和融入卡片(终止色=椭圆底边处卡片背景色，避免出现硬分割线) */
+  .portrait-fade {
+    position:absolute; left:0; right:0; bottom:0; height:110px; z-index:4;
+    background:linear-gradient(to bottom,rgba(19,24,35,0) 0%,rgba(19,24,35,.55) 55%,#131823 100%);
+  }
+
+  /* 定位徽章（左上角） */
+  .pos-badge {
+    position:absolute; top:16px; right:16px; z-index:6;
+    padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;
+    background:rgba(201,162,75,.16); border:1px solid rgba(201,162,75,.5); color:#e8d4a0;
+    backdrop-filter:blur(4px);
+  }
+
+  /* 名字区域 */
+  .card-foot { position:absolute; left:0; right:0; bottom:52px; z-index:6; text-align:center; }
+  .card-name-tag {
+    display:inline-block; padding:5px 22px;
+    text-shadow:0 2px 10px rgba(0,0,0,.85);
+    font-size:17px; font-weight:700; color:#f0f2f6; letter-spacing:3px;
+  }
+  /* 底部元素条 */
+  .elem-bar {
+    position:absolute; left:14px; right:14px; bottom:12px; z-index:6; height:30px;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    font-size:12px; color:#9aa3b5;
+  }
+  .elem-icon { width:16px; height:16px; object-fit:contain; display:inline-block; filter:drop-shadow(0 0 3px rgba(255,255,255,.15)); }
+  .elem-sep { width:1px; height:14px; background:#333d50; }
+
+  /* 配队说明区 */
+  .team-desc { max-width:1100px; margin:0 auto; }
+  .desc-card {
+    background:rgba(17,22,31,.6); border:1px solid #232b39; border-radius:12px; padding:20px 24px;
+    border-left:3px solid #c9a24b;
+  }
+  .desc-title { font-size:15px; font-weight:700; color:#c9a24b; margin-bottom:10px; }
+  .desc-text { font-size:13px; color:#aab2c2; line-height:2; }
+  .desc-text b { color:#6fc3df; font-weight:600; }
+
+  /* 每套配队区块 */
+  .team-block { margin-bottom:46px; }
+  .team-block:last-child { margin-bottom:10px; }
+  .team-block-title {
+    max-width:1100px; margin:0 auto 18px; font-size:17px; font-weight:700; color:#e6e8ee;
+    padding-bottom:10px; border-bottom:1px solid #2a3346; display:flex; align-items:baseline; gap:14px;
+  }
+  .team-block-members { font-size:12px; font-weight:400; color:#7a8499; letter-spacing:1px; }
+  .build-btn {
+    margin-left:auto; padding:6px 18px; border-radius:8px; cursor:pointer;
+    background:linear-gradient(135deg,#c9a24b,#a8862f); border:none; flex-shrink:0; align-self:center;
+    color:#0a0d13; font-size:13px; font-weight:700; font-family:inherit; letter-spacing:1px;
+    transition:all .15s;
+  }
+  .build-btn:hover { filter:brightness(1.15); box-shadow:0 4px 14px rgba(201,162,75,.35); }
+
+  /* 手法教学链接卡片 */
+  .guide-card {
+    display:flex; align-items:center; gap:12px; max-width:1100px; margin:14px auto 0;
+    padding:14px 20px; border-radius:12px; text-decoration:none;
+    background:linear-gradient(90deg,rgba(201,162,75,.14),rgba(111,195,223,.06));
+    border:1px solid rgba(201,162,75,.4); color:#e6e8ee; transition:all .18s;
+  }
+  .guide-card:hover { border-color:#c9a24b; transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.4); }
+  .guide-icon { color:#c9a24b; font-size:13px; flex-shrink:0; }
+  .guide-text { font-size:14px; font-weight:600; color:#f0d9a8; white-space:nowrap; }
+  .guide-link { font-size:14px; white-space:nowrap; flex-shrink:0; margin-left:auto; }
+  .guide-br { color:#ffffff; font-weight:700; }
+  .guide-go { color:#6fc3df; font-weight:600; }
+  .guide-arrow { color:#c9a24b; font-size:20px; flex-shrink:0; }
+
+  .empty-tip { text-align:center; padding:100px 20px; color:#7a8499; font-size:15px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">
+    <a class="back-btn" href="javascript:;" onclick="window.close();">← 返回角色配队</a>
+    <span class="top-title" id="teamTitle">角色配队</span>
+    <span class="top-sub" id="teamSub"></span>
+  </div>
+  <div id="teamContent"></div>
+</div>
+
+<script>
+/* ============ 配队数据库（逐步补充） ============
+   每个主C：background 页面背景图；teams = 多套配队，每套 members=[主C,队友1,队友2] */
+const TEAM_DATA = {
+  '爱弥斯': {
+    background: '/res/Background/' + encodeURIComponent('爱弥斯') + '.png',
+    teams: [
+      {
+        title: '配队一 · 聚爆体系',
+        members: [
+          { name:'爱弥斯', pos:'主C',  elem:'热熔' },
+          { name:'达妮娅', pos:'副C/辅助', elem:'热熔' },
+          { name:'千咲',   pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>爱弥斯</b>为核心输出，<b>达妮娅</b>提供热熔增益与聚爆体系协同、补副C伤害，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。双热熔共鸣触发属性加成，千咲保障全队生存与循环。',
+        guide: { text: '前去学习爱弥斯聚爆手法教学', url: 'https://www.bilibili.com/video/BV1xRGt6WE62?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 震谐体系',
+        members: [
+          { name:'爱弥斯', pos:'主C',  elem:'热熔' },
+          { name:'琳奈',   pos:'副C/辅助', elem:'衍射' },
+          { name:'莫宁',   pos:'奶辅', elem:'热熔' }
+        ],
+        desc: '以<b>爱弥斯</b>为核心输出走震谐循环，<b>琳奈</b>凭借衍射震谐/集谐双模态提供延奏协同、减抗与补伤，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。爱弥斯与莫宁组成双热熔共鸣触发属性加成，琳奈负责衍射破盾与增伤，莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习爱弥斯震谐手法教学', url: 'https://www.bilibili.com/video/BV1gK7K6LEH5?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '绯雪': {
+    background: '/res/Background/' + encodeURIComponent('绯雪') + '.png',
+    teams: [
+      {
+        title: '配队一 · 冷凝体系',
+        members: [
+          { name:'绯雪',   pos:'主C',      elem:'冷凝' },
+          { name:'洛瑟菈', pos:'副C/辅助', elem:'冷凝' },
+          { name:'穗穗',   pos:'奶辅',     elem:'冷凝' }
+        ],
+        desc: '以<b>绯雪</b>为核心输出打冷凝/霜渐体系，<b>洛瑟菈</b>同为冷凝副C/辅助，提供霜渐与声骸双体系协同、补副C伤害，<b>穗穗</b>作为冷凝奶辅承担治疗与增益。三冷凝共鸣触发属性加成，穗穗保障全队生存与技能循环。',
+        guide: { text: '前去学习绯雪冷凝体系手法教学', url: 'https://www.bilibili.com/video/BV1SG3x6nEoJ?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 冷凝虚湮体系',
+        members: [
+          { name:'绯雪',   pos:'主C',      elem:'冷凝' },
+          { name:'洛瑟菈', pos:'副C/辅助', elem:'冷凝' },
+          { name:'千咲',   pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>绯雪</b>为核心输出，<b>洛瑟菈</b>提供冷凝体系协同与补副C伤害，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。双冷凝共鸣触发属性加成，千咲保障全队生存与循环。',
+        guide: { text: '前去学习绯雪虚湮体系手法教学', url: 'https://www.bilibili.com/video/BV1vh7i6zEjo?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 冷凝震谐体系',
+        members: [
+          { name:'绯雪',   pos:'主C',      elem:'冷凝' },
+          { name:'琳奈',   pos:'副C/辅助', elem:'衍射' },
+          { name:'千咲',   pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>绯雪</b>为核心输出，<b>琳奈</b>凭借衍射震谐/集谐双模态提供延奏协同、减抗与补伤，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。琳奈负责衍射破盾与增伤，千咲保障全队生存与循环。',
+        guide: { text: '前去学习绯雪震谐体系手法教学', url: 'https://www.bilibili.com/video/BV1yF9bBWEyA?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 震谐偏谐体系',
+        members: [
+          { name:'绯雪',   pos:'主C',      elem:'冷凝' },
+          { name:'琳奈',   pos:'副C/辅助', elem:'衍射' },
+          { name:'莫宁',   pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>绯雪</b>为核心输出，<b>琳奈</b>提供衍射震谐/集谐双模态的延奏协同、减抗与补伤，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。琳奈负责衍射破盾与增伤，莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习绯雪震谐偏谐手法教学', url: 'https://www.bilibili.com/video/BV19S9XBMEN4?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '秧秧·玄翎': {
+    background: '/res/Background/' + encodeURIComponent('秧秧·玄翎') + '.png',
+    teams: [
+      {
+        title: '配队一 · 湮灭体系',
+        members: [
+          { name:'秧秧·玄翎', pos:'主C',       elem:'湮灭' },
+          { name:'弗洛洛',    pos:'副C/辅助',  elem:'湮灭' },
+          { name:'千咲',      pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>秧秧·玄翎</b>为核心输出打湮灭/虚湮重击流，<b>弗洛洛</b>提供湮灭副C伤害与声骸体系协同，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。三湮灭共鸣触发属性加成，千咲保障全队生存与循环。',
+        guide: { text: '前去学习秧秧·玄翎湮灭体系手法教学', url: 'https://www.bilibili.com/video/BV1Z8NT6YEZh?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 湮灭生存体系',
+        members: [
+          { name:'秧秧·玄翎', pos:'主C',       elem:'湮灭' },
+          { name:'穗穗',      pos:'奶辅',      elem:'冷凝' },
+          { name:'千咲',      pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>秧秧·玄翎</b>为核心输出，<b>穗穗</b>作为冷凝奶辅承担治疗与增益，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。千咲保障全队生存与循环，穗穗提升全队容错与技能循环。',
+        guide: { text: '前去学习秧秧·玄翎生存体系手法教学', url: 'https://www.bilibili.com/video/BV1Bv3x6eE2F?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 重击增伤体系',
+        members: [
+          { name:'秧秧·玄翎', pos:'主C',  elem:'湮灭' },
+          { name:'穗穗',      pos:'奶辅', elem:'冷凝' },
+          { name:'莫特斐',    pos:'副C',  elem:'热熔' }
+        ],
+        desc: '以<b>秧秧·玄翎</b>为核心输出走重击流，<b>莫特斐</b>作为热熔副C提供脱手输出与重击增伤，<b>穗穗</b>承担治疗与增益。莫特斐补足副C伤害，穗穗保障全队生存与技能循环。',
+        guide: { text: '前去学习秧秧·玄翎重击增伤手法教学', url: 'https://www.bilibili.com/video/BV1F3Gg6fEgd?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 湮灭守护体系',
+        members: [
+          { name:'秧秧·玄翎', pos:'主C',       elem:'湮灭' },
+          { name:'千咲',      pos:'生存/辅助', elem:'湮灭' },
+          { name:'守岸人',    pos:'奶辅',      elem:'衍射' }
+        ],
+        desc: '以<b>秧秧·玄翎</b>为核心输出，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤，<b>守岸人</b>作为衍射奶辅承担治疗与增益。千咲保障全队生存与循环，守岸人提升全队容错。',
+        guide: { text: '前去学习秧秧·玄翎守护体系手法教学', url: 'https://www.bilibili.com/video/BV1YiNj6nEJn?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '清霄': {
+    background: '/res/Background/' + encodeURIComponent('清霄') + '.png',
+    teams: [
+      {
+        title: '配队一 · 集谐体系',
+        members: [
+          { name:'清霄',   pos:'主C',       elem:'气动' },
+          { name:'达妮娅', pos:'副C/辅助',  elem:'热熔' },
+          { name:'莫宁',   pos:'奶辅',      elem:'热熔' }
+        ],
+        desc: '以<b>清霄</b>为核心输出走气动/集谐体系，<b>达妮娅</b>提供热熔体系协同与补副C伤害，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。达妮娅与莫宁组成双热熔共鸣触发属性加成，莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习清霄集谐手法教学', url: 'https://www.bilibili.com/video/BV1Vp8M6xE3R?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 集谐体系',
+        members: [
+          { name:'清霄',   pos:'主C',      elem:'气动' },
+          { name:'琳奈',   pos:'副C/辅助', elem:'衍射' },
+          { name:'莫宁',   pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>清霄</b>为核心输出走气动/集谐体系，<b>琳奈</b>凭借衍射震谐/集谐双模态提供延奏协同、减抗与补伤，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。琳奈负责衍射破盾与增伤，莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习清霄集谐手法教学', url: 'https://www.bilibili.com/video/BV1cz8w6JEFU?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '露西': {
+    background: '/res/Background/' + encodeURIComponent('露西') + '.png',
+    teams: [
+      {
+        title: '配队一 · 骇破守护体系',
+        members: [
+          { name:'露西',   pos:'主C',      elem:'衍射' },
+          { name:'丽贝卡', pos:'副C/辅助', elem:'导电' },
+          { name:'守岸人', pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>露西</b>为核心输出打衍射/骇破重击流，<b>丽贝卡</b>作为导电副C/辅助提供骇破体系协同与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。露西与守岸人组成双衍射共鸣触发属性加成，守岸人保障全队生存与循环。',
+        guide: { text: '前去学习露西骇破守护手法教学', url: 'https://www.bilibili.com/video/BV1pSES6ZEVi?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 骇破奶辅体系',
+        members: [
+          { name:'露西',   pos:'主C',      elem:'衍射' },
+          { name:'丽贝卡', pos:'副C/辅助', elem:'导电' },
+          { name:'维里奈', pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>露西</b>为核心输出打衍射/骇破重击流，<b>丽贝卡</b>作为导电副C/辅助提供骇破体系协同与补副C伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。露西与维里奈组成双衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { text: '前去学习露西骇破奶辅手法教学', url: 'https://www.bilibili.com/video/BV15pEK64E42?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 骇破偏谐体系',
+        members: [
+          { name:'露西',   pos:'主C',      elem:'衍射' },
+          { name:'丽贝卡', pos:'副C/辅助', elem:'导电' },
+          { name:'莫宁',   pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>露西</b>为核心输出打衍射/骇破重击流，<b>丽贝卡</b>作为导电副C/辅助提供骇破体系协同与补副C伤害，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习露西骇破偏谐手法教学', url: 'https://www.bilibili.com/video/BV16HJN6wE5p?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '西格莉卡': {
+    background: '/res/Background/' + encodeURIComponent('西格莉卡') + '.png',
+    teams: [
+      {
+        title: '配队一 · 声骸协同体系',
+        members: [
+          { name:'西格莉卡', pos:'主C',      elem:'气动' },
+          { name:'洛瑟菈',   pos:'副C/辅助', elem:'冷凝' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>西格莉卡</b>为核心输出走气动/声骸技能特化体系，<b>洛瑟菈</b>此处为声骸模态（非霜渐模态），提供声骸体系协同与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习西格莉卡声骸协同手法教学', url: 'https://www.bilibili.com/video/BV1qQJ76FETQ?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 声骸增伤体系',
+        members: [
+          { name:'西格莉卡', pos:'主C',      elem:'气动' },
+          { name:'仇远',     pos:'副C/辅助', elem:'气动' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>西格莉卡</b>为核心输出走气动/声骸技能特化体系，<b>仇远</b>作为气动副C/辅助承担声骸体系核心增伤与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。西格莉卡与仇远组成双气动共鸣触发属性加成，守岸人保障全队生存与循环。',
+        guide: { text: '前去学习西格莉卡声骸增伤手法教学', url: 'https://www.bilibili.com/video/BV1SkwrzQENs?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 集谐奶辅体系',
+        members: [
+          { name:'西格莉卡', pos:'主C',      elem:'气动' },
+          { name:'琳奈',     pos:'副C/辅助', elem:'衍射' },
+          { name:'莫宁',     pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>西格莉卡</b>为核心输出走气动/声骸技能特化体系，<b>琳奈</b>凭借衍射震谐/集谐双模态提供延奏协同、减抗与补伤，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。琳奈负责衍射破盾与增伤，莫宁保障全队生存与技能循环。',
+        guide: { contact: true },
+        hasBuild: true
+      }
+    ]
+  },
+  '陆·赫斯': {
+    background: '/res/Background/' + encodeURIComponent('陆·赫斯') + '.png',
+    teams: [
+      {
+        title: '配队一 · 集谐普攻体系',
+        members: [
+          { name:'陆·赫斯', pos:'主C',       elem:'衍射' },
+          { name:'莫宁',    pos:'奶辅',      elem:'热熔' },
+          { name:'达妮娅',  pos:'副C/辅助',  elem:'热熔' }
+        ],
+        desc: '以<b>陆·赫斯</b>为核心输出打衍射/集谐普攻流，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益，<b>达妮娅</b>此处为集谐·偏移模态（非聚爆模态），提供集谐协同与补副C伤害。莫宁与达妮娅组成双热熔共鸣触发属性加成，保障全队生存与技能循环。',
+        guide: { text: '前去学习陆·赫斯集谐普攻手法教学', url: 'https://www.bilibili.com/video/BV17eG861EEQ?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 集谐冷凝体系',
+        members: [
+          { name:'陆·赫斯', pos:'主C',      elem:'衍射' },
+          { name:'散华',    pos:'副C/主C',  elem:'冷凝' },
+          { name:'莫宁',    pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>陆·赫斯</b>为核心输出打衍射/集谐普攻流，<b>散华</b>作为冷凝副C提供爆发输出与补伤害，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习陆·赫斯集谐冷凝手法教学', url: 'https://www.bilibili.com/video/BV1XofYBbExR?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 集谐震谐体系',
+        members: [
+          { name:'陆·赫斯', pos:'主C',      elem:'衍射' },
+          { name:'琳奈',    pos:'副C/辅助', elem:'衍射' },
+          { name:'莫宁',    pos:'奶辅',     elem:'热熔' }
+        ],
+        desc: '以<b>陆·赫斯</b>为核心输出打衍射/集谐普攻流，<b>琳奈</b>此处为集谐·偏移模态（非震谐模态），提供集谐协同、减抗与补伤，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。陆·赫斯与琳奈组成双衍射共鸣触发属性加成，莫宁保障全队生存与循环。',
+        guide: { text: '前去学习陆·赫斯集谐震谐手法教学', url: 'https://www.bilibili.com/video/BV1R2fhBtEqP?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '嘉贝莉娜': {
+    background: '/res/Background/' + encodeURIComponent('嘉贝莉娜') + '.png',
+    teams: [
+      {
+        title: '配队一 · 热熔重击体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',      elem:'热熔' },
+          { name:'莫特斐',   pos:'副C',      elem:'热熔' },
+          { name:'维里奈',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>莫特斐</b>作为热熔副C提供脱手输出与重击增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。嘉贝莉娜与莫特斐组成双热熔共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { text: '前去学习嘉贝莉娜热熔重击手法教学', url: 'https://www.bilibili.com/video/BV17ff8BhEpf?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 声骸增伤体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',      elem:'热熔' },
+          { name:'仇远',     pos:'副C/辅助', elem:'气动' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>仇远</b>作为气动副C/辅助承担声骸体系核心增伤与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习嘉贝莉娜声骸增伤手法教学', url: 'https://www.bilibili.com/video/BV1CXy8BeEwK?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 热熔协同体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',  elem:'热熔' },
+          { name:'露帕',     pos:'副C',  elem:'热熔' },
+          { name:'莫宁',     pos:'奶辅', elem:'热熔' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>露帕</b>作为热熔副C提供协同与补伤害，<b>莫宁</b>作为热熔奶辅承担治疗与偏谐体系增益。三热熔共鸣触发属性加成，莫宁保障全队生存与技能循环。',
+        guide: { text: '前去学习嘉贝莉娜热熔手法教学', url: 'https://www.bilibili.com/video/BV1aCAhzNEfu?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 重击增伤体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',      elem:'热熔' },
+          { name:'尤诺',     pos:'辅助/副C', elem:'气动' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>尤诺</b>作为气动重击增伤专辅大幅强化重击伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习嘉贝莉娜重击增伤手法教学', url: 'https://www.bilibili.com/video/BV1jF4iz5EWL?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队五 · 热熔守护体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',      elem:'热熔' },
+          { name:'露帕',     pos:'副C',      elem:'热熔' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>露帕</b>作为热熔副C提供协同与补伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。嘉贝莉娜与露帕组成双热熔共鸣触发属性加成，守岸人保障全队生存与循环。',
+        guide: { text: '前去学习嘉贝莉娜热熔守护手法教学', url: 'https://www.bilibili.com/video/BV1wCx6ziErT?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队六 · 三热熔体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',       elem:'热熔' },
+          { name:'布兰特',   pos:'生存/辅助', elem:'热熔' },
+          { name:'露帕',     pos:'副C',       elem:'热熔' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>布兰特</b>作为热熔生存位承担治疗与增益（共鸣效率转化攻击），<b>露帕</b>作为热熔副C提供协同与补伤害。三热熔共鸣触发属性加成，布兰特保障全队生存与循环。',
+        guide: { text: '前去学习嘉贝莉娜三热熔手法教学', url: 'https://www.bilibili.com/video/BV1Rq4Fz3Eb7?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队七 · 湮灭混编体系',
+        members: [
+          { name:'嘉贝莉娜', pos:'主C',      elem:'热熔' },
+          { name:'弗洛洛',   pos:'副C/辅助', elem:'湮灭' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>嘉贝莉娜</b>为核心输出打热熔/重击流，<b>弗洛洛</b>作为湮灭副C/辅助提供声骸体系协同与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习嘉贝莉娜湮灭混编手法教学', url: 'https://www.bilibili.com/video/BV1eCxrzsEPP?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '奥古斯塔': {
+    background: '/res/Background/' + encodeURIComponent('奥古斯塔') + '.png',
+    teams: [
+      {
+        title: '配队一 · 导电重击体系',
+        members: [
+          { name:'奥古斯塔', pos:'主C',      elem:'导电' },
+          { name:'莫特斐',   pos:'副C',      elem:'热熔' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>奥古斯塔</b>为核心输出打导电/重击流，<b>莫特斐</b>作为热熔副C提供脱手输出与重击增伤，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习奥古斯塔导电重击手法教学', url: 'https://www.bilibili.com/video/BV1Ygh9zPE7i?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 重击协同体系',
+        members: [
+          { name:'奥古斯塔', pos:'主C',      elem:'导电' },
+          { name:'尤诺',     pos:'辅助/副C', elem:'气动' },
+          { name:'琳奈',     pos:'副C/辅助', elem:'衍射' }
+        ],
+        desc: '以<b>奥古斯塔</b>为核心输出打导电/重击流，<b>尤诺</b>作为气动重击增伤专辅大幅强化重击伤害，<b>琳奈</b>此处为集谐·偏移模态（非震谐模态），提供集谐协同、减抗与补伤。尤诺与琳奈共同保障输出与循环。',
+        guide: { text: '前去学习奥古斯塔重击协同手法教学', url: 'https://www.bilibili.com/video/BV1ppvYBJEm8?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 重击守护体系',
+        members: [
+          { name:'奥古斯塔', pos:'主C',      elem:'导电' },
+          { name:'尤诺',     pos:'辅助/副C', elem:'气动' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>奥古斯塔</b>为核心输出打导电/重击流，<b>尤诺</b>作为气动重击增伤专辅大幅强化重击伤害，<b>守岸人</b>作为衍射奶辅承担治疗与增益。守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习奥古斯塔重击守护手法教学', url: 'https://www.bilibili.com/video/BV1GWVA6hEWd?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '弗洛洛': {
+    background: '/res/Background/' + encodeURIComponent('弗洛洛') + '.png',
+    teams: [
+      {
+        title: '配队一 · 声骸守护体系',
+        members: [
+          { name:'弗洛洛',   pos:'主C/副C',  elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'守岸人',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>弗洛洛</b>为核心输出走湮灭/声骸体系，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>守岸人</b>作为衍射奶辅承担治疗与增益。双奶保障全队生存与循环，三湮灭共鸣触发属性加成。',
+        guide: { text: '前去学习弗洛洛声骸守护手法教学', url: 'https://www.bilibili.com/video/BV1YpbSzQEq1?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 声骸治疗体系',
+        members: [
+          { name:'弗洛洛',   pos:'主C/副C',  elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'卜灵',     pos:'辅助/副C', elem:'导电' }
+        ],
+        desc: '以<b>弗洛洛</b>为核心输出走湮灭/声骸体系，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>卜灵</b>作为导电辅助承担治疗与共鸣技能增伤。双治疗辅助保障全队生存与循环。',
+        guide: { text: '前去学习弗洛洛声骸治疗手法教学', url: 'https://www.bilibili.com/video/BV19jmgBMEqT?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 声骸增伤体系',
+        members: [
+          { name:'弗洛洛',   pos:'主C/副C',  elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'仇远',     pos:'副C/辅助', elem:'气动' }
+        ],
+        desc: '以<b>弗洛洛</b>为核心输出走湮灭/声骸体系，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>仇远</b>作为气动副C/辅助承担声骸体系核心增伤与补副C伤害。双增伤辅助最大化声骸体系输出。',
+        guide: { text: '前去学习弗洛洛声骸增伤手法教学', url: 'https://www.bilibili.com/video/BV1Yk1MBdEvP?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 声骸协同体系',
+        members: [
+          { name:'弗洛洛',   pos:'主C/副C',  elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'洛瑟菈',   pos:'副C/辅助', elem:'冷凝' }
+        ],
+        desc: '以<b>弗洛洛</b>为核心输出走湮灭/声骸体系，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>洛瑟菈</b>此处为声骸模态（非霜渐模态），提供声骸体系协同与补副C伤害。三辅助围绕声骸体系最大化输出。',
+        guide: { text: '前去学习弗洛洛声骸协同手法教学', url: 'https://www.bilibili.com/video/BV1YuJw6CE32?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队五 · 声骸爆发体系',
+        members: [
+          { name:'弗洛洛',   pos:'副C/主C', elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'今汐',     pos:'主C',     elem:'衍射' }
+        ],
+        desc: '以<b>今汐</b>为核心输出打衍射/共鸣技能爆发，<b>弗洛洛</b>作为湮灭副C提供声骸体系协同与补伤害，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤与治疗。坎特蕾拉保障全队生存与循环。',
+        guide: { text: '前去学习弗洛洛声骸爆发手法教学', url: 'https://www.bilibili.com/video/BV1ix8xzxEhh?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队六 · 声骸聚怪体系',
+        members: [
+          { name:'弗洛洛',   pos:'主C/副C',  elem:'湮灭' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'洛可可',   pos:'副C/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>弗洛洛</b>为核心输出走湮灭/声骸体系，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>洛可可</b>作为湮灭副C提供聚怪与增伤。三湮灭共鸣触发属性加成，聚怪提升输出效率。',
+        guide: { text: '前去学习弗洛洛声骸聚怪手法教学', url: 'https://www.bilibili.com/video/BV1N3byzREsk?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '卡提希娅': {
+    background: '/res/Background/' + encodeURIComponent('卡提希娅') + '.png',
+    teams: [
+      {
+        title: '配队一 · 气动体系',
+        members: [
+          { name:'卡提希娅',     pos:'主C',      elem:'气动' },
+          { name:'漂泊者·气动',  pos:'副C/辅助', elem:'气动' },
+          { name:'散华',         pos:'副C',      elem:'冷凝' }
+        ],
+        desc: '以<b>卡提希娅</b>为核心输出打气动/风蚀体系，<b>漂泊者·气动</b>作为气动副C/辅助提供气动增益、协同输出与补伤害，<b>散华</b>作为冷凝副C提供爆发输出与补伤害。双气动共鸣触发属性加成，三人接力循环输出。',
+        guide: { text: '前去学习卡提希娅气动体系手法教学', url: 'https://www.bilibili.com/video/BV1GkMrz5Eoc?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 气动协同体系',
+        members: [
+          { name:'卡提希娅',     pos:'主C',      elem:'气动' },
+          { name:'漂泊者·气动',  pos:'副C/辅助', elem:'气动' },
+          { name:'夏空',         pos:'副C/辅助', elem:'气动' }
+        ],
+        desc: '以<b>卡提希娅</b>为核心输出打气动/风蚀体系，<b>漂泊者·气动</b>提供气动增益与协同输出，<b>夏空</b>作为气动副C/辅助提供延奏协同、减抗与补伤。三气动共鸣触发属性加成，全队围绕风蚀体系最大化输出。',
+        guide: { text: '前去学习卡提希娅气动协同手法教学', url: 'https://www.bilibili.com/video/BV1LiMTznEho?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 气动守护体系',
+        members: [
+          { name:'卡提希娅',     pos:'主C',      elem:'气动' },
+          { name:'夏空',         pos:'副C/辅助', elem:'气动' },
+          { name:'守岸人',       pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>卡提希娅</b>为核心输出打气动/风蚀体系，<b>夏空</b>作为气动副C/辅助提供延奏协同、减抗与补伤，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双气动共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习卡提希娅气动守护手法教学', url: 'https://www.bilibili.com/video/BV19LMBzNE3A?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 气动生存体系',
+        members: [
+          { name:'卡提希娅',     pos:'主C',       elem:'气动' },
+          { name:'夏空',         pos:'副C/辅助',  elem:'气动' },
+          { name:'千咲',         pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>卡提希娅</b>为核心输出打气动/风蚀体系，<b>夏空</b>作为气动副C/辅助提供延奏协同、减抗与补伤，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。双气动共鸣触发属性加成，千咲保障全队生存与循环。',
+        guide: { text: '前去学习卡提希娅气动生存手法教学', url: 'https://www.bilibili.com/video/BV1DqCZBsEPr?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队五 · 气动混编体系',
+        members: [
+          { name:'卡提希娅',     pos:'主C',       elem:'气动' },
+          { name:'千咲',         pos:'生存/辅助', elem:'湮灭' },
+          { name:'散华',         pos:'副C',       elem:'冷凝' }
+        ],
+        desc: '以<b>卡提希娅</b>为核心输出打气动/风蚀体系，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤，<b>散华</b>作为冷凝副C提供爆发输出与补伤害。千咲保障全队生存与循环，散华补足副C伤害。',
+        guide: { text: '前去学习卡提希娅气动混编手法教学', url: 'https://www.bilibili.com/video/BV1xTUsBvEez?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '赞妮': {
+    background: '/res/Background/' + encodeURIComponent('赞妮') + '.png',
+    teams: [
+      {
+        title: '配队一 · 衍射体系',
+        members: [
+          { name:'赞妮',        pos:'主C',      elem:'衍射' },
+          { name:'菲比',        pos:'副C/辅助', elem:'衍射' },
+          { name:'漂泊者·衍射', pos:'副C/辅助', elem:'衍射' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪体系，<b>菲比</b>作为衍射副C/辅助提供光噪协同、延奏增伤与补伤，<b>漂泊者·衍射</b>作为衍射副C/辅助承担光噪减抗与增伤。三衍射共鸣触发属性加成，全队围绕光噪体系最大化输出。',
+        guide: { text: '前去学习赞妮衍射体系手法教学', url: 'https://www.bilibili.com/video/BV1LSG6zsEMa?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 衍射守护体系',
+        members: [
+          { name:'赞妮',        pos:'主C',      elem:'衍射' },
+          { name:'菲比',        pos:'副C/辅助', elem:'衍射' },
+          { name:'守岸人',      pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪体系，<b>菲比</b>作为衍射副C/辅助提供光噪协同、延奏增伤与补伤，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。三衍射共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习赞妮衍射守护手法教学', url: 'https://www.bilibili.com/video/BV13bG2zPEVm?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 衍射奶辅体系',
+        members: [
+          { name:'赞妮',        pos:'主C',      elem:'衍射' },
+          { name:'菲比',        pos:'副C/辅助', elem:'衍射' },
+          { name:'维里奈',      pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪体系，<b>菲比</b>作为衍射副C/辅助提供光噪协同、延奏增伤与补伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。三衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { text: '前去学习赞妮衍射奶辅手法教学', url: 'https://www.bilibili.com/video/BV1E4GazMEb2?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 衍射续航体系',
+        members: [
+          { name:'赞妮',        pos:'主C',      elem:'衍射' },
+          { name:'漂泊者·衍射', pos:'副C/辅助', elem:'衍射' },
+          { name:'维里奈',      pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪体系，<b>漂泊者·衍射</b>作为衍射副C/辅助承担光噪减抗与增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。三衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { text: '前去学习赞妮衍射续航手法教学', url: 'https://www.bilibili.com/video/BV1EjVuz6ETS?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队五 · 重击增伤体系',
+        members: [
+          { name:'赞妮',        pos:'主C',      elem:'衍射' },
+          { name:'菲比',        pos:'副C/辅助', elem:'衍射' },
+          { name:'尤诺',        pos:'辅助/副C', elem:'气动' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪重击流，<b>菲比</b>作为衍射副C/辅助提供光噪协同、延奏增伤与补伤，<b>尤诺</b>作为气动重击增伤专辅大幅强化重击伤害。双衍射共鸣触发属性加成，尤诺最大化赞妮的重击输出。',
+        guide: { text: '前去学习赞妮重击增伤手法教学', url: 'https://www.bilibili.com/video/BV16Zp2zzE3e?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队六 · 衍射生存体系',
+        members: [
+          { name:'赞妮',        pos:'主C',       elem:'衍射' },
+          { name:'菲比',        pos:'副C/辅助',  elem:'衍射' },
+          { name:'千咲',        pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>赞妮</b>为核心输出打衍射/光噪体系，<b>菲比</b>作为衍射副C/辅助提供光噪协同、延奏增伤与补伤，<b>千咲</b>承担生存位并通过虚湮效应提供减抗与增伤。双衍射共鸣触发属性加成，千咲保障全队生存与循环。',
+        guide: { text: '前去学习赞妮衍射生存手法教学', url: 'https://www.bilibili.com/video/BV15BywB3ES7?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '珂莱塔': {
+    background: '/res/Background/' + encodeURIComponent('珂莱塔') + '.png',
+    teams: [
+      {
+        title: '配队一 · 冷凝体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',      elem:'冷凝' },
+          { name:'折枝',    pos:'副C',      elem:'冷凝' },
+          { name:'守岸人',  pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>折枝</b>作为冷凝副C提供脱手协同输出与冷凝增伤，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双冷凝共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习珂莱塔冷凝体系手法教学', url: 'https://www.bilibili.com/video/BV1pu6mYCEtc?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队二 · 冷凝奶辅体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',  elem:'冷凝' },
+          { name:'折枝',    pos:'副C',  elem:'冷凝' },
+          { name:'维里奈',  pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>折枝</b>作为冷凝副C提供脱手协同输出与冷凝增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。双冷凝共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { text: '前去学习珂莱塔冷凝奶辅手法教学', url: 'https://www.bilibili.com/video/BV1cdrHYgEsg?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队三 · 冷凝副C体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',  elem:'冷凝' },
+          { name:'散华',    pos:'副C',  elem:'冷凝' },
+          { name:'守岸人',  pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>散华</b>作为冷凝副C提供爆发输出与补伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双冷凝共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { text: '前去学习珂莱塔冷凝副C手法教学', url: 'https://www.bilibili.com/video/BV1uArNYrE94?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队四 · 冷凝热熔体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',  elem:'冷凝' },
+          { name:'长离',    pos:'副C',  elem:'热熔' },
+          { name:'守岸人',  pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>长离</b>作为热熔副C提供离火协同、延奏增伤与补伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。守岸人保障全队生存与技能循环，长离最大化珂莱塔的输出窗口。',
+        guide: { text: '前去学习珂莱塔冷凝热熔手法教学', url: 'https://www.bilibili.com/video/BV1LNcvenE9B?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队五 · 冷凝导电体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',  elem:'冷凝' },
+          { name:'灯灯',    pos:'副C',  elem:'导电' },
+          { name:'维里奈',  pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>灯灯</b>作为导电副C提供协同输出与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与循环，灯灯补足副C伤害。',
+        guide: { text: '前去学习珂莱塔冷凝导电手法教学', url: 'https://www.bilibili.com/video/BV1qWrGYgEkZ?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队六 · 导电协同体系',
+        members: [
+          { name:'珂莱塔',   pos:'主C',  elem:'冷凝' },
+          { name:'守岸人',   pos:'奶辅', elem:'衍射' },
+          { name:'奥古斯塔', pos:'副C',  elem:'导电' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升，<b>奥古斯塔</b>作为导电副C提供重击协同与补伤害。守岸人保障全队生存与技能循环，奥古斯塔补足副C伤害。',
+        guide: { text: '前去学习珂莱塔导电协同手法教学', url: 'https://www.bilibili.com/video/BV1JfhCzDE4w?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        title: '配队七 · 冷凝生存体系',
+        members: [
+          { name:'珂莱塔',  pos:'主C',       elem:'冷凝' },
+          { name:'守岸人',  pos:'奶辅',      elem:'衍射' },
+          { name:'桃祈',    pos:'生存/辅助', elem:'湮灭' }
+        ],
+        desc: '以<b>珂莱塔</b>为核心输出打冷凝/凝伤体系，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升，<b>桃祈</b>承担生存位并提供嘲讽护盾与增伤辅助。双奶保障全队生存与循环，为珂莱塔提供稳定输出环境。',
+        guide: { text: '前去学习珂莱塔冷凝生存手法教学', url: 'https://www.bilibili.com/video/BV1Fv6UY1EAS?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '椿': {
+    background: '/res/Background/' + encodeURIComponent('椿') + '.png',
+    teams: [
+      {
+        members: [
+          { name:'椿',     pos:'主C',  elem:'湮灭' },
+          { name:'散华',   pos:'副C',  elem:'冷凝' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>椿</b>为核心输出打湮灭/花冠体系，<b>散华</b>作为冷凝副C提供爆发输出与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与技能循环，散华补足副C伤害。',
+        guide: { url: 'https://www.bilibili.com/video/BV1fgU6YME8b?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'椿',     pos:'主C',       elem:'湮灭' },
+          { name:'洛可可', pos:'副C/辅助',  elem:'湮灭' },
+          { name:'维里奈', pos:'奶辅',      elem:'衍射' }
+        ],
+        desc: '以<b>椿</b>为核心输出打湮灭/花冠体系，<b>洛可可</b>作为湮灭副C提供聚怪与增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。双湮灭共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1y2fJYJEad?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'椿',     pos:'主C',  elem:'湮灭' },
+          { name:'散华',   pos:'副C',  elem:'冷凝' },
+          { name:'守岸人', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>椿</b>为核心输出打湮灭/花冠体系，<b>散华</b>作为冷凝副C提供爆发输出与补伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。守岸人保障全队生存与技能循环，散华补足副C伤害。',
+        guide: { url: 'https://www.bilibili.com/video/BV1wmUJYWE6N?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'椿',     pos:'主C',       elem:'湮灭' },
+          { name:'洛可可', pos:'副C/辅助',  elem:'湮灭' },
+          { name:'守岸人', pos:'奶辅',      elem:'衍射' }
+        ],
+        desc: '以<b>椿</b>为核心输出打湮灭/花冠体系，<b>洛可可</b>作为湮灭副C提供聚怪与增伤，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双湮灭共鸣触发属性加成，守岸人保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1G9Lsz7EsE?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'椿',     pos:'主C',       elem:'湮灭' },
+          { name:'弗洛洛', pos:'副C/辅助',  elem:'湮灭' },
+          { name:'守岸人', pos:'奶辅',      elem:'衍射' }
+        ],
+        desc: '以<b>椿</b>为核心输出打湮灭/花冠体系，<b>弗洛洛</b>作为湮灭副C/辅助提供声骸体系协同与补副C伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双湮灭共鸣触发属性加成，守岸人保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1pVb9zLEPV?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '长离': {
+    background: '/res/Background/' + encodeURIComponent('长离') + '.png',
+    teams: [
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'露帕',   pos:'副C',  elem:'热熔' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>露帕</b>作为热熔副C提供协同输出与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。双热熔共鸣触发属性加成，维里奈保障全队生存与技能循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV18S3UzYEdS?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'今汐',   pos:'副C/主C', elem:'衍射' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>今汐</b>作为衍射副C提供共鸣技能爆发与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与技能循环，今汐接力补足输出。',
+        guide: { url: 'https://www.bilibili.com/video/BV1iKQFY8EEK?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',       elem:'热熔' },
+          { name:'布兰特', pos:'生存/辅助', elem:'热熔' },
+          { name:'露帕',   pos:'副C',       elem:'热熔' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>布兰特</b>作为热熔生存位承担治疗与增益（共鸣效率转化攻击），<b>露帕</b>作为热熔副C提供协同与补伤害。三热熔共鸣触发属性加成，布兰特保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1bw3YznEC6?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'散华',   pos:'副C',  elem:'冷凝' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>散华</b>作为冷凝副C提供爆发输出与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与技能循环，散华补足副C伤害。',
+        guide: { url: 'https://www.bilibili.com/video/BV1M142187AT?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',       elem:'热熔' },
+          { name:'布兰特', pos:'生存/辅助', elem:'热熔' },
+          { name:'散华',   pos:'副C',       elem:'冷凝' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>布兰特</b>作为热熔生存位承担治疗与增益（共鸣效率转化攻击），<b>散华</b>作为冷凝副C提供爆发输出与补伤害。双热熔共鸣触发属性加成，布兰特保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1on9CYdEU3?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'露帕',   pos:'副C',  elem:'热熔' },
+          { name:'守岸人', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>露帕</b>作为热熔副C提供协同输出与补伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双热熔共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1Ym3EzpEwb?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'安可',   pos:'副C',  elem:'热熔' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>安可</b>作为热熔副C提供协同输出与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。双热熔共鸣触发属性加成，维里奈保障全队生存与技能循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1cm42137Dz?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'长离',   pos:'主C',  elem:'热熔' },
+          { name:'安可',   pos:'副C',  elem:'热熔' },
+          { name:'露帕',   pos:'副C',  elem:'热熔' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>安可</b>作为热熔副C提供协同输出与补伤害，<b>露帕</b>作为热熔副C提供协同与补伤害。三热熔共鸣触发属性加成，双副C围绕长离最大化输出。',
+        guide: { url: 'https://www.bilibili.com/video/BV14s3az1E4s?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '今汐': {
+    background: '/res/Background/' + encodeURIComponent('今汐') + '.png',
+    teams: [
+      {
+        members: [
+          { name:'今汐',   pos:'主C',      elem:'衍射' },
+          { name:'吟霖',   pos:'副C/辅助', elem:'导电' },
+          { name:'维里奈', pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>今汐</b>为核心输出打衍射/共鸣技能爆发，<b>吟霖</b>作为导电副C/辅助提供协同输出、磁殛增伤与能量回复，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。今汐与维里奈组成双衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1js421M7g1?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'今汐',   pos:'主C',  elem:'衍射' },
+          { name:'莫特斐', pos:'副C',  elem:'热熔' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>今汐</b>为核心输出打衍射/共鸣技能爆发，<b>莫特斐</b>作为热熔副C提供脱手输出与重击增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。今汐与维里奈组成双衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1Ci421Y7YU?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'今汐',     pos:'主C',      elem:'衍射' },
+          { name:'坎特蕾拉', pos:'副C/辅助', elem:'湮灭' },
+          { name:'维里奈',   pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>今汐</b>为核心输出打衍射/共鸣技能爆发，<b>坎特蕾拉</b>作为湮灭增伤奶提供增伤、治疗与协同，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。今汐与维里奈组成双衍射共鸣触发属性加成，双奶保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1rXZiYxEp7?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'今汐',   pos:'主C',  elem:'衍射' },
+          { name:'折枝',   pos:'副C',  elem:'冷凝' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>今汐</b>为核心输出打衍射/共鸣技能爆发，<b>折枝</b>作为冷凝副C提供脱手协同输出与冷凝增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。三衍射共鸣触发属性加成，维里奈保障全队生存与循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1Hr421M7HY?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'今汐',   pos:'主C',      elem:'衍射' },
+          { name:'长离',   pos:'副C/主C',  elem:'热熔' },
+          { name:'维里奈', pos:'奶辅',     elem:'衍射' }
+        ],
+        desc: '以<b>长离</b>为核心输出打热熔/离火体系，<b>今汐</b>作为衍射副C提供共鸣技能爆发与补伤害，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与技能循环，今汐接力补足输出。',
+        guide: { url: 'https://www.bilibili.com/video/BV1iKQFY8EEK?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  },
+  '忌炎': {
+    background: '/res/Background/' + encodeURIComponent('忌炎') + '.png',
+    teams: [
+      {
+        members: [
+          { name:'忌炎',   pos:'主C',  elem:'气动' },
+          { name:'莫特斐', pos:'副C',  elem:'热熔' },
+          { name:'维里奈', pos:'奶辅', elem:'衍射' }
+        ],
+        desc: '以<b>忌炎</b>为核心输出打气动/重击流，<b>莫特斐</b>作为热熔副C提供脱手输出与重击增伤，<b>维里奈</b>作为衍射奶妈承担治疗、增伤与能量回复。维里奈保障全队生存与技能循环，莫特斐补足副C伤害。',
+        guide: { url: 'https://www.bilibili.com/video/BV1BFyXYfE55?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      },
+      {
+        members: [
+          { name:'忌炎',   pos:'主C',       elem:'气动' },
+          { name:'尤诺',   pos:'辅助/副C',  elem:'气动' },
+          { name:'守岸人', pos:'奶辅',      elem:'衍射' }
+        ],
+        desc: '以<b>忌炎</b>为核心输出打气动/重击流，<b>尤诺</b>作为气动重击增伤专辅大幅强化重击伤害，<b>守岸人</b>作为衍射奶辅承担治疗、增益与暴击提升。双气动共鸣触发属性加成，守岸人保障全队生存与技能循环。',
+        guide: { url: 'https://www.bilibili.com/video/BV1nZp2zzEga?vd_source=db65a6ded78eb646be9f7dc68f76da3e' },
+        hasBuild: true
+      }
+    ]
+  }
+};
+
+/* 禁止拖动图片资源（CSS 之外的 JS 兜底） */
+document.addEventListener('dragstart', (e) => { if (e.target && e.target.tagName === 'IMG') e.preventDefault(); });
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* 配队序号中文数字 */
+const CN_NUM = ['一','二','三','四','五','六','七','八','九','十'];
+/* 配队简称：取每名成员名字的第一个字（如 爱弥斯/达妮娅/千咲 -> 爱达千），
+   配队标题与教学链接文案统一由此生成，新增配队无需手写 */
+function teamAbbr(team){ return team.members.map(m => m.name[0]).join(''); }
+
+function renderCard(m, idx) {
+  const enc = encodeURIComponent(m.name);
+  /* 优先用预处理的卡片专用立绘(已裁成椭圆比例/头顶贴顶/2x高清)，加载失败再回退全身原图 */
+  const portraitCard = '/res/Project/角色卡片/' + enc + '.webp?v=headcenter3';
+  const portraitFull = '/res/Project/角色/' + enc + '.webp';
+  const cn = ['一','二','三'][idx] || '';
+  let h = '';
+  h += '<div class="role-card">';
+  h += '<div class="card-index">' + (idx + 1) + '</div>';
+  h += '<div class="deco-star tl"></div>';
+  h += '<div class="deco-vline left"></div>';
+  h += '<div class="deco-dots"></div>';
+  h += '<div class="pos-badge">' + escapeHtml(m.pos) + ' · ' + escapeHtml(m.elem) + '</div>';
+  h += '<div class="portrait-clip"><img src="' + portraitCard + '" data-full="' + portraitFull + '" onerror="if(this.dataset.full){this.src=this.dataset.full;this.dataset.full=\'\'}" alt="' + escapeHtml(m.name) + '"><div class="portrait-fade"></div></div>';
+  h += '<div class="card-foot">';
+  h += '<span class="card-name-tag">' + escapeHtml(m.name) + '</span>';
+  h += '</div>';
+  h += '<div class="elem-bar">';
+  h += '<img class="elem-icon" src="/res/Project/Icons/' + encodeURIComponent('元素-' + m.elem) + '.png" alt="' + escapeHtml(m.elem) + '" onerror="this.style.display=\'none\'"><span>' + escapeHtml(m.elem) + '</span>';
+  h += '<span class="elem-sep"></span><span>队伍位置：' + cn + '号位</span>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+function main() {
+  const mainName = new URLSearchParams(location.search).get('main') || '';
+  document.getElementById('teamTitle').textContent = mainName ? mainName + ' · 推荐配队' : '角色配队';
+  const data = TEAM_DATA[mainName];
+  const box = document.getElementById('teamContent');
+
+  /* 设置页面背景图（加深色蒙层保证可读性；爱弥斯背景较亮，蒙层单独加深到75%，其余55%） */
+  if (data && data.background) {
+    const dim = (mainName === '爱弥斯' || mainName === '弗洛洛' || mainName === '赞妮' || mainName === '椿' || mainName === '长离' || mainName === '今汐') ? .75 : .55;
+    document.body.style.backgroundImage =
+      'linear-gradient(rgba(10,13,19,' + dim + '),rgba(10,13,19,' + dim + ')),url("' + data.background + '")';
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center top';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundRepeat = 'no-repeat';
+  }
+
+  if (!data) {
+    box.innerHTML = '<div class="empty-tip">「' + escapeHtml(mainName) + '」的配队方案正在整理中，敬请期待。<br><br>目前已开放：爱弥斯 · 绯雪 · 秧秧·玄翎 · 清霄 · 露西 · 西格莉卡 · 陆·赫斯 · 嘉贝莉娜 · 奥古斯塔 · 弗洛洛 · 卡提希娅 · 赞妮 · 珂莱塔 · 椿 · 长离 · 今汐 · 忌炎</div>';
+    return;
+  }
+  document.getElementById('teamSub').textContent = '共 ' + data.teams.length + ' 套推荐编队';
+
+  let html = '';
+  data.teams.forEach((team, ti) => {
+    const abbr = teamAbbr(team);
+    /* 配队标题（自动生成：配队N · 成员首字简称） */
+    html += '<div class="team-block">';
+    html += '<div class="team-block-title">配队' + (CN_NUM[ti] || ti + 1) + ' · ' + escapeHtml(abbr) + '<span class="team-block-members">' + team.members.map(m=>m.name).join(' · ') + '</span>';
+    /* 配队养成按钮（跳转养成模版页，携带配队序号） */
+    if (team.hasBuild) {
+      html += '<button class="build-btn" onclick="window.open(\'/team_build.html?main=' + encodeURIComponent(mainName) + '&team=' + ti + '\',\'_blank\')">配队养成</button>';
+    }
+    html += '</div>';
+    /* 三张卡片 */
+    html += '<div class="team-row">';
+    team.members.forEach((m, i) => { html += renderCard(m, i); });
+    html += '</div>';
+    /* 配队思路 */
+    html += '<div class="team-desc"><div class="desc-card"><div class="desc-title">配队思路</div><div class="desc-text">' + team.desc + '</div></div></div>';
+    /* 手法教学链接（不显示原始链接，显示 [点击以前往]：括号白色、文字蓝色）；
+       无教学链接的配队显示 [联系开发者前去提供]，点击打开联系页 */
+    if (team.guide && team.guide.contact) {
+      html += '<a class="guide-card" href="/contact.html" target="_blank" rel="noopener">';
+      html += '<span class="guide-icon">▶</span>';
+      html += '<span class="guide-text">暂无教学链接</span>';
+      html += '<span class="guide-link"><span class="guide-br">[</span><span class="guide-go">联系开发者前去提供</span><span class="guide-br">]</span></span>';
+      html += '<span class="guide-arrow">›</span>';
+      html += '</a>';
+    } else if (team.guide) {
+      html += '<a class="guide-card" href="' + team.guide.url + '" target="_blank" rel="noopener">';
+      html += '<span class="guide-icon">▶</span>';
+      html += '<span class="guide-text">前去学习' + escapeHtml(abbr) + '手法教学</span>';
+      html += '<span class="guide-link"><span class="guide-br">[</span><span class="guide-go">点击以前往</span><span class="guide-br">]</span></span>';
+      html += '<span class="guide-arrow">›</span>';
+      html += '</a>';
+    }
+    html += '</div>';
+  });
+  box.innerHTML = html;
+}
+main();
+</script>
+</body>
+</html>

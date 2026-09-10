@@ -25,8 +25,8 @@ build\mec_import.exe --root .
 if errorlevel 1 exit /b 1
 
 echo [3/3] Building MingEchoServer.exe (pure C, no Python)...
-set SRC=native\server\main.c native\server\http_server.c native\server\routes.c native\server\mec_config.c native\server\mec_cloud.c ^
-    native\mec_core.c native\core\score.c native\core\recommend.c native\core\panel.c ^
+set SRC=native\server\main.c native\server\http_server.c native\server\routes.c native\server\mec_config.c native\server\mec_kuro.c native\server\mec_cloud.c native\server\mec_gacha.c ^
+    native\mec_core.c native\core\score.c native\core\recommend.c native\core\panel.c native\core\echo_grade.c ^
     native\parser\stat_parser.c native\parser\chinese_dict.c ^
     native\database\loader.c native\database\cache.c native\database\generator.c
 

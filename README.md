@@ -1,73 +1,197 @@
-# MingEchoAssistant_Final
+# 鸣潮攻略站 · Wuthering Waves Guide
 
-鸣潮声骸词条解析、评分与推荐 + 云端多模态 AI 助手，**纯 C 后端 + Web 前端**，无 Python / Node 运行时依赖。
+鸣潮玩家攻略助手：**角色配队推荐 / 配队养成模版 / 声骸本地评分定级 / 库街区账号数据浏览 / 本地抽卡记录**，纯 C 后端 + Web 前端，无 Python / GCC/ Node 运行时依赖。
+
+下期版本更新预告：**完美的GUI**，将会使用到WebkitGTK将现有的Web前端资源投影至GTK窗口。将不依赖于从浏览器启动。
+
+> 本项目由 MingEchoAssistant（鸣潮助手）演进而来，品牌名升级为「鸣潮攻略站」。
 
 ## 特性
 
-- **智能助手（多模态）**：接入 **Agnes AI 云端模型**（`agnes-2.5-flash`，免费、多模态），支持 SSE 流式输出与图片输入，可直接粘贴游戏截图让模型看图回答（角色、面板、声骸词条分析）。云端推理，**不占用本机 CPU/GPU**，边打游戏边用也流畅。
-- **声骸评分**：C 核心解析词条、按角色毕业线评分并给出养成推荐。
-- **资源数据库**：C 导入器从 `resources/Project` 自动导入角色、声骸、武器、合鸣效果。
-- **鸣潮风格深色 UI**：金色/冰青点缀的科幻面板风格，浏览器访问即用。
+- **角色配队**：选择主 C 查看推荐配队，每个角色最多 8 套配队，含三张角色卡片（立绘 / 元素 / 队伍位置）、配队思路说明与 B 站手法教学直达链接。已开放 17 位主 C：爱弥斯 · 绯雪 · 秧秧·玄翎 · 清霄 · 露西 · 西格莉卡 · 陆·赫斯 · 嘉贝莉娜 · 奥古斯塔 · 弗洛洛 · 卡提希娅 · 赞妮 · 珂莱塔 · 椿 · 长离 · 今汐 · 忌炎。
+- **抽卡记录**：导航栏「角色配队」下方的「抽卡记录」页（路由 `/gacha`）。C 后端读取本机鸣潮 `Client\Saved\Logs\Client.log`（XOR 解密后提取官方唤取记录链接），13 类卡池**并发**请求官方接口（系统 curl），全量记录合并保存到本地 `gacha_data.json`；前端支持卡池筛选、星级筛选与分页浏览，展示角色头像 / 武器图标，并汇总累计唤取 / 五星数量 / 五星概率 / 平均五星抽数 / 角色池当前垫抽等概览。链路设计参考开源项目 [juliy819/wuwa-gacha-tool](https://github.com/juliy819/wuwa-gacha-tool)（Tauri + Rust，Apache-2.0），本项目将其核心逻辑**用零第三方依赖的纯 C 独立实现**。
+- **配队养成**：每套配队附带全部角色的养成模版（属性阈值 / 声骸合鸣套装建议 / 首位声骸及立绘），页面使用各角色专属背景图。
+- **声骸本地评分定级**：角色详情内每个声骸自动显示 **ACE / SSS / SS / S / A / B / C / D** 等级标识（彩色大字），评分完全由本地 C 后端计算，按角色有效词条 + 副词条档位定级，详见下文「声骸评分定级规则」。
+- **游戏账户（库街区连接）**：支持短信验证码登录 / Token 登录，连接后可查看已拥有角色列表与角色详情（主面板、武器、声骸套装、装配声骸）。
+- **角色信息**：浏览玩家全部角色，点击查看完整角色详情；页面卡片半透明，背景图透出。
+- **全息战略**：查看各 Boss 全息 1~6 难度通关状态（已通过 / 暂无记录）。
+- **逆境深塔**：查看残响之塔、深境之塔、回音之塔的通关层数与出战队伍。
+- **无尽湍渊 / 终焉矩阵**：界面已预留，待库街区开放接口后自动显示。
+- **资源数据库**：浏览角色、声骸、武器、合鸣效果、合鸣词条，带立绘图标。
+- **角色专属背景图**：每个功能界面与每个主 C 的配队 / 养成页面均配备专属背景图（半透明内容卡片 + 顶部导航让位），整页铺满。
+- **沉浸式细节**：全局禁止拖动 / 选中图片与文字；自定义深色滚动条；每个主 C 的立绘均经过专用脚本裁剪构图（头顶贴顶、人物居中）。
+
+## 界面与路由
+
+启动后默认打开 **`http://127.0.0.1:8123/account`**（根路径 `/` 自动 302 跳转）。
+
+| URL | 页面 |
+|---|---|
+| `/account` | 游戏账户（库街区连接） |
+| `/character` | 角色信息（角色列表 + 角色详情 + 声骸评分定级） |
+| `/strategy` | 全息战略 |
+| `/tower` | 逆境深塔 |
+| `/endless` | 无尽湍渊 |
+| `/matrix` | 终焉矩阵 |
+| `/team` | 角色配队（主 C 选择网格） |
+| `/gacha` | 抽卡记录（唤取历史浏览与同步） |
+| `/project` | 关于此项目 |
+| `/sql` | 数据库 |
+| `/runtime` | 运行状态 |
+| `/team.html?main=角色名` | 角色 · 推荐配队 |
+| `/team_build.html?main=角色名&team=配队序号(0起)` | 角色 · 配队养成 |
+| `/gpl3.html` | GPL-3.0 完整协议 |
+| `/contact.html` | 联系开发者 |
+
+各功能界面均配有专属背景图（`resources/Background/` 下的 account.jpg、character.jpg、strategy.png、tower.png、endless.png、matrix.jpg、team.png、gacha.png、project.png）。
 
 ## 架构（纯 C + Web）
 
 ```text
 MingEchoAssistant_Final
 ├── native/
-│   ├── server/                  # C 后端：HTTP 服务器 + 路由 + 云端 SSE 代理
-│   │   ├── main.c               # 入口（端口 8123，自动开浏览器）
+│   ├── server/                  # C 后端：HTTP 服务器 + 路由 + 库街区 API 代理
+│   │   ├── main.c               # 入口（端口 8123，自动开浏览器，UTF-8 控制台）
 │   │   ├── http_server.c        # 单进程多线程 HTTP 服务器
-│   │   ├── routes.c             # REST API 路由（/api/*）
-│   │   ├── mec_cloud.c          # curl.exe 子进程流式转发 Agnes AI（SSE）
-│   │   ├── mec_config.c         # config.json / 资源读取（UTF-8）
+│   │   ├── routes.c             # REST API 路由（/api/*）+ 静态文件 + SPA 回退 + 根路径跳转
+│   │   ├── mec_kuro.c           # 库街区 API 代理（curl 子进程）+ 账号配置 + 请求频率限制
+│   │   ├── mec_gacha.c          # 抽卡记录：Client.log 解密提取链接 + 13 卡池并发同步（curl 子进程）
+│   │   ├── mec_config.c         # config.json / kuro_config.json 读写（UTF-8）+ 轻量 JSON 工具
+│   │   ├── mec_cloud.c          # 云端模型 SSE 转发（保留能力，前端当前未启用）
+│   │   ├── import_main.c        # 资源导入器（编译时用）
 │   │   └── win_utf8.h           # UTF-8 ↔ UTF-16 宽字符文件工具
 │   ├── mec_core.c               # C 核心（导出）
-│   ├── core/                    # 评分 / 推荐 / 面板解析
+│   ├── core/
+│   │   ├── echo_grade.c         # 声骸评分定级（ACE~D，读取 echo_grade_rules.json）
+│   │   ├── score.c              # 旧版目标面板评分（当前前端未使用，保留）
+│   │   ├── recommend.c          # 养成推荐
+│   │   └── panel.c              # 面板解析
 │   ├── parser/                  # 词条文本解析 + 中文词典
-│   └── database/                # 资源加载 / 缓存 / 生成
+│   ├── database/                # 资源加载 / 缓存 / 生成
+│   └── common/                  # mec_common.h / echo_grade.h 等公共头
 ├── web/                         # Web 前端（原生 HTML/CSS/JS，免构建）
-│   ├── index.html
-│   ├── css/style.css            # 鸣潮深色主题（金 --gold / 冰青 --ice）
-│   └── js/{api,app,chat,score,db,status}.js
+│   ├── index.html               # 主应用（游戏账户 / 角色信息 / 全息战略 / 逆境深塔 / 无尽湍渊 / 终焉矩阵 / 角色配队 / 抽卡记录 / 关于此项目 / 数据库 / 运行状态）
+│   ├── team.html                # 角色 · 推荐配队（配队数据库 TEAM_DATA）
+│   ├── team_build.html          # 角色 · 配队养成（养成模版 BUILD_DATA）
+│   ├── contact.html             # 联系开发者
+│   ├── gpl3.html                # GPL-3.0 完整协议
+│   ├── css/style.css            # 鸣潮深色主题 + 半透明卡片 + 滚动条 + 交互禁用
+│   └── js/                      # app.js（路由+背景）/ game.js（角色详情+评分展示）/ team.js / gacha.js（抽卡记录）/ holo.js / tower.js / db.js / status.js / api.js
+├── resources/
+│   ├── echo_grade_rules.json    # 声骸评分有效词条配置（每角色，可手动编辑）
+│   ├── Background/              # 各界面与各主 C 专属背景图
+│   ├── Project/                 # 角色头像 / 卡片立绘 / 养成立绘 / 声骸图标 / 武器图标 / 合鸣效果 / 元素图标
+│   └── ui/                      # app.png 图标等
 ├── database/                    # 自动生成数据库（*.bin + catalog.json）
-├── resources/Project/           # 已导入资源（角色立绘、声骸等）
-├── resources/ui/                # 界面 Logo、图标
-├── config.json                  # 云端模型（API 地址/密钥/模型）与对话配置
+├── config.json                  # 云端模型配置（保留能力，当前前端未启用）
+├── kuro_config.json             # 库街区账号配置（连接后自动生成）
 ├── build_gcc.bat                # 一键构建：导入器 → 导入数据库 → 服务器
-├── build/MingEchoServer.exe     # C 后端可执行文件（release）
-└── run.bat                      # 启动（双击即用）
+├── build/MingEchoServer.exe     # C 后端可执行文件
+├── run.bat                      # 启动（双击即用）
+├── LICENSE                      # GNU GPL v3.0
+└── README.md
 ```
 
-## 配置（config.json）
+## 声骸评分定级规则
+
+角色详情中每件声骸的等级由本地 C 后端 `/api/echo_grade` 计算，规则如下：
+
+1. **底座分 60 分**：声骸主词条固定计 60 分。
+2. **有效副词条**：仅角色的有效词条才计分（配置见 `resources/echo_grade_rules.json`）。每个有效副词条按其数值落在档位表的档位计分：**档位 / 满档 × 16 分**（8 档词条每档 2 分，4 档词条每档 4 分）。
+3. **等级由「有效词条数量 + 平均档位」决定**：
+
+| 有效词条数 | 平均档位高 | 平均档位中 | 平均档位低 |
+|---|---|---|---|
+| 5 条 | ACE | SSS | SS |
+| 4 条 | SS | S | A |
+| 3 条 | S | A | B |
+| 2 条 | A | B | — |
+
+4. **双暴门槛**：刚需双暴的角色（`requiresDoubleCrit: true`）——
+   - 有双暴：按上表定级（5 条全满档 = 140 分 ACE）；
+   - 只有单暴：纯单暴 C；单暴 + 1 个其他有效词条 B；单暴 + 2~3 个其他有效词条最高可到 A；
+   - 无暴击：D。
+5. **不刚需双暴的角色**（`requiresDoubleCrit: false`，如奶辅）：跳过双暴门槛，纯按数量 + 档位定级。
+
+副词条档位表（最低 → 最大）：
+
+| 词条 | 档位值 |
+|---|---|
+| 暴击 | 6.3% / 6.9% / 7.5% / 8.1% / 8.7% / 9.3% / 9.9% / 10.5% |
+| 暴击伤害 | 12.6% / 13.8% / 15.0% / 16.2% / 17.4% / 18.6% / 19.8% / 21.0% |
+| 共鸣技能伤害加成 / 共鸣解放伤害加成 / 普攻伤害加成 / 重击伤害加成 / 攻击百分比 / 生命百分比 | 6.4% / 7.1% / 7.9% / 8.6% / 9.4% / 10.1% / 10.9% / 11.6% |
+| 固定攻击 | 30 / 40 / 50 / 60 |
+| 防御百分比 | 8.1% / 9.0% / 10.0% / 10.9% / 11.8% / 12.8% / 13.8% / 14.7% |
+| 固定防御 | 40 / 50 / 60 / 70 |
+| 固定生命 | 320 / 360 / 390 / 430 / 470 / 510 / 540 / 580 |
+| 共鸣效率 | 6.8% / 7.6% / 8.4% / 9.2% / 10.0% / 10.8% / 11.6% / 12.4% |
+
+> 百分比与固定值按数值是否带 `%` 自动区分（如"攻击 8.6%" → 攻击百分比，"攻击 50" → 固定攻击）。
+>
+> 面板中"漂泊者"不区分属性，评分时按角色详情的元素自动映射到 `漂泊者·气动 / 漂泊者·衍射 / 漂泊者·湮灭 / 漂泊者·导电`。
+
+### 修改有效词条配置
+
+编辑 **`resources/echo_grade_rules.json`**，每个角色一段：
 
 ```json
-{
-  "cloud": {
-    "base_url": "https://apihub.agnes-ai.com/v1",
-    "model": "agnes-2.5-flash",
-    "api_key": "sk-xxxx",
-    "auto_start": true,
-    "timeout": 90
-  },
-  "chat": { "max_tokens": 4096, "temperature": 0.7, "system_prompt": "..." }
+"爱弥斯": {
+  "requiresDoubleCrit": true,
+  "validSubs": ["攻击百分比", "固定攻击", "暴击", "暴击伤害", "共鸣效率", "共鸣解放伤害加成"]
 }
 ```
 
-- `cloud.api_key`：**必填**，Agnes AI 的 API 密钥。
-- `cloud.model`：模型名，默认 `agnes-2.5-flash`。
-- `cloud.base_url`：API 地址，默认 `https://apihub.agnes-ai.com/v1`。
-- `cloud.auto_start`：启动时是否自动检测云端连接。
-- `chat.max_tokens`：单次回复最大 token 数，可适当调大。
+- `validSubs`：该角色的有效副词条（可用的规范名：`暴击`、`暴击伤害`、`共鸣效率`、`共鸣解放伤害加成`、`共鸣技能伤害加成`、`普攻伤害加成`、`重击伤害加成`、`攻击百分比`、`固定攻击`、`防御百分比`、`固定防御`、`生命百分比`、`固定生命`）。
+- `requiresDoubleCrit`：该角色是否刚需双暴。
+- **保存即生效，无需重启服务器**（每次评分都会重新读取该文件）。
+- 养成模版更新后可运行 `node build/gen_grade_rules.js` 从 `web/team_build.html` 重新生成全部角色的配置（注意：会覆盖手动改动）。
+
+## 添加新角色的配队 / 养成
+
+- **推荐配队**：在 `web/team.html` 的 `TEAM_DATA` 中按现有格式添加角色条目。配队标题与教学链接文案自动生成（取每名成员名字首字，如 爱弥斯/达妮娅/千咲 → "配队一 · 爱达千"、"前去学习爱达千手法教学"），只需填写成员、配队思路与 B 站链接。
+- **配队养成**：在 `web/team_build.html` 中用 `row('角色名', [[属性,数值],...], '首位声骸', '声骸等级目录', RES_套装建议)` 定义养成模版，并在 `BUILD_DATA` 中按配队顺序组合。
+- **声骸评分**：养成模版里的属性会决定该角色的有效词条，运行 `node build/gen_grade_rules.js` 同步到评分配置；或直接手动编辑 `resources/echo_grade_rules.json`。
+
+## 配置
+
+
+### kuro_config.json（库街区账号，连接后自动生成）
+
+```json
+{
+  "token": "eyJhbGciOi...",
+  "role_id": "109290098",
+  "server_id": "76402e5b20be2c39f095a152090afddc"
+}
+```
+
+- `token`：库街区长期登录 Token（短信登录后自动获取，或手动填写）。
+- `role_id`：游戏内角色 UID。
+- `server_id`：区服 ID，国服固定为 `76402e5b20be2c39f095a152090afddc`，如需其他区服请手动编辑此文件。
+
+> 所有账号数据仅保存在本地 `kuro_config.json`，**不上传任何服务器**。
+
+### 抽卡记录本地文件（自动生成）
+
+| 文件 | 内容 |
+|---|---|
+| `gacha_config.json` | 上次使用的鸣潮安装目录（供「抽卡记录」页回填） |
+| `gacha_data.json` | 已同步的全部唤取记录（按 13 类卡池分组 + UID + 同步时间），可能数 MB |
+
+- 两个文件均生成在项目根目录，仅保存在本机；删除即彻底清除抽卡数据。
+- 同步凭据（`record_id` 等）只在请求官方接口时使用，**不写入任何文件、不上传第三方**。
 
 ## 构建（纯 C）
 
-Windows + MinGW-w64 GCC（`C:\mingw64\bin\gcc.exe`）：
+Windows + MinGW-w64 GCC（需支持 C11，将 `gcc.exe` 加入 PATH）：
 
 ```bat
 build_gcc.bat
 ```
 
-三步：编译 `mec_import.exe` → 重新导入数据库 → 编译 `MingEchoServer.exe`（release，链接 `-lws2_32 -lwinhttp -lshell32 -lkernel32 -luser32 -lgdi32 -lm`）。
+三步：编译 `mec_import.exe` → 重新导入数据库 → 编译 `MingEchoServer.exe`（链接 `-lws2_32 -lwinhttp -lshell32 -lkernel32 -luser32 -lgdi32 -lm`）。
+
+**编译依赖**：仅需 gcc（MinGW-w64）+ Windows 系统库（自带）。不需要 Python、Node 或任何第三方库。
 
 ## 运行
 
@@ -81,57 +205,83 @@ run.bat
 build\MingEchoServer.exe --port 8123
 ```
 
-启动后自动打开浏览器访问 `http://127.0.0.1:8123`，端口可用 `--port` 指定。
+启动后自动打开浏览器访问 `http://127.0.0.1:8123/account`（根路径 `/` 自动跳转），端口可用 `--port` 指定。
+
+**运行依赖**：
+- Windows 10 1803+（系统自带 `C:\Windows\System32\curl.exe`，项目通过 curl 子进程转发 HTTPS 请求）
+- 网络连接（访问库街区 API）
+- 浏览器（Chrome / Edge / Firefox）
+
+> 普通用户使用已编译的 `MingEchoServer.exe` 即可，**不需要 gcc，不需要 Python**。
 
 ## API
 
 | 端点 | 说明 |
 |---|---|
-| `GET /api/status` | 云端配置、密钥、资源库计数 |
+| `GET /api/status` | 运行状态、资源库计数 |
 | `GET /api/characters` | 角色列表 |
 | `GET /api/database` | 声骸 / 武器 / 合鸣效果 / 合鸣词条 |
-| `POST /api/score` | 评分（`character` + `echo_text` + `panel_text`） |
-| `POST /api/recommend` | 养成推荐 |
+| `POST /api/echo_grade` | **声骸评分定级**（`character` + `data`，返回每个声骸的分数与 ACE~D 等级） |
 | `POST /api/parse` | 词条文本解析 |
-| `POST /api/chat` | 云端对话（SSE 流式，支持多模态图片） |
+| `POST /api/config/api_key` | 更新云端模型密钥 |
+| `GET /api/kuro/config` | 读取库街区账号配置 |
+| `POST /api/kuro/config` | 保存库街区账号配置 |
+| `POST /api/kuro/config/clear` | 清除账号配置 |
+| `POST /api/kuro/send_code` | 库街区短信验证码请求 |
+| `POST /api/kuro/sdk_login` | 库街区短信登录 / Token 登录 |
+| `POST /api/kuro/proxy` | 库街区 API 代理（角色列表 / 角色详情 / 全息 / 深塔 / 湍渊 / 矩阵） |
+| `GET /api/gacha/config` | 读取上次保存的鸣潮安装目录 |
+| `POST /api/gacha/scan` | 解密 `Client.log` 并提取最新唤取记录链接（`game_dir` 可为空，用上次目录） |
+| `POST /api/gacha/sync` | 按链接同步 13 类卡池官方记录，写入 `gacha_data.json` |
+| `GET /api/gacha/records` | 返回已同步的全部抽卡记录 |
 
 ## 使用提示
 
-- 在「智能助手」页，可直接 `Ctrl+V` 粘贴游戏截图，云端模型会看图回答面板与词条问题（替代旧版 OCR）。
-- 在「声骸评分」页选择角色（可搜索下拉）、粘贴面板与声骸词条，点「评分 / 推荐」。
-- 在「运行状态」页可「检测连接」云端模型，并查看 C 组件与资源库状态。
-- 若界面样式未更新，按 `Ctrl+F5` 强制刷新（前端已带版本号防缓存）。
+- **游戏账户**：首次使用需连接库街区账号。推荐在库街区官方 App 获取验证码后短信登录；也可手动填写 Token。区服 ID 国服固定。
+- **角色信息**：连接账号后点击角色查看详情，每件声骸右侧即为评分等级标识（ACE 红色 / SSS·SS·S 金色 / A·B 蓝色 / C·D 绿色）。
+- **角色配队**：点击主 C 头像进入推荐配队；「配队养成」按钮在新标签页打开对应养成模版。
+- **抽卡记录**：先在游戏内打开一次「唤取记录」页面（让日志写入最新链接），再到本页填写鸣潮安装目录（如 `C:\Program Files\Wuthering Waves\Wuthering Waves Game`）点击「扫描日志并同步」；也可以点「粘贴链接同步」手动粘贴官方唤取记录链接。官方链接通常只保留近约 6 个月，建议定期同步。
+- 若界面样式未更新，按 `Ctrl+F5` 强制刷新。
+- 页面已全局禁止选中文字与拖动图片资源。
 
-## 角色目标面板（毕业线）如何修改
+## 数据隐私与安全
 
-### 声骸评分页「目标面板」的展示（Markdown 表格）
+- **所有数据仅保存在本地**：库街区账号 Token、角色 UID 均保存在本地 `kuro_config.json`，**不上传任何第三方服务器**。
+- **抽卡记录不出本机**：Client.log 仅以共享读方式在本机解析，唤取记录经官方接口拉取后保存在本地 `gacha_data.json`；解析出的链接与凭据不写入任何文件、不发送到除官方接口以外的任何地址。读取日志不修改游戏文件、不触碰游戏进程。
+- **请求频率限制**：对库街区 API 的请求有间隔限制，避免对官方服务器造成压力。
+- **开源透明**：本项目包括所有源代码完全开源免费，接受社区审查。
 
-展示数据保存在 **`database/character_targets.json`**（由 `角色面板_修正版.md` 生成）。服务器**实时读取**，改完刷新页面立即生效，无需重启。
+## 开源协议
 
-结构（每个角色一个对象）：
+本项目采用 **GNU General Public License v3.0 (GPL-3.0)** 开源协议。
 
-| 字段 | 含义 |
-|---|---|
-| `role` / `desc` | 定位（如 `主C`）与完整定位描述 |
-| `stages` | 毕业阶段列表：`{label, cells}`，`cells` 键为 `crit/crit_damage/attack/energy/hp/def` |
-| `statOrder` | 表格列顺序（决定显示哪些列） |
-| `priority` | 属性优先级 |
-| `weapon` / `echoes` / `cost` | 武器 / 声骸 / COST 配装建议 |
+- 允许自由使用、修改、分发，但修改后的衍生作品必须同样以 GPL-3.0 开源并发布源代码。
+- 禁止将本项目代码用于闭源商业产品。
+- 其他版本的此项目（包括但不限于功能、权限、数据来源等）与主干开发者无关，不承担任何法律纠纷。
+- 请自行按需修改自己想要的版本，禁止恶意攻击他人服务器和恶意篡改。
 
-修改示例——把今汐大毕业暴击调到 78：
+完整协议文本见 [LICENSE](LICENSE) 或运行后访问 `http://127.0.0.1:8123/gpl3.html`。
 
-```json
-"今汐": { "stages": [ ... { "label": "大毕业", "cells": { "crit": "≥78%", ... } } ] }
-```
+## 免责声明
 
-> 注意：修改 `角色面板_修正版.md` 后需要重新生成 json 才会生效；直接改 json 最快。
+1. **非官方产品**：本项目为玩家自发开发的第三方工具，**不隶属于库洛游戏，与库洛游戏无任何官方关联**。鸣潮（Wuthering Waves）游戏名称、角色、声骸、武器、美术资源等所有知识产权均归库洛游戏（Kuro Games）所有。
+2. **仅供学习交流**：本项目仅供个人学习、研究与交流使用，**不得用于任何商业用途**。
+3. **使用风险自担**：使用本项目所产生的任何直接或间接后果（包括但不限于账号封禁、数据丢失、游戏异常等），均由用户自行承担，**项目开发者不承担任何法律责任**。
+4. **衍生版本免责**：本项目的其他分支、修改版、衍生版本与主干开发者无关，**主干开发者不承担任何法律纠纷**。
+5. **禁止恶意使用**：禁止利用本项目进行恶意攻击他人服务器、恶意篡改数据、侵犯他人隐私、违反库洛游戏用户协议等行为。
+6. **数据来源说明**：玩家角色数据通过库街区公开 API 获取，抽卡记录通过游戏官方唤取记录接口获取（实现思路参考 [wuwa-gacha-tool](https://github.com/juliy819/wuwa-gacha-tool)），仅在本地展示与评分，**不上传任何第三方服务器**。如库街区或官方抽卡接口政策变更导致功能失效，项目开发者不承担责任。
 
-### 评分用目标面板（CSV，供"评分/养成推荐"计算）
+## 致谢
 
-评分逻辑读取 **`database/character_profiles.csv`**（列：`name,role,crit,crit_damage,attack,energy,basic,heavy,skill,liberation,attack_weight`），改完刷新即生效。当前 56 个角色已写入基线数值，可直接手动修正。
+- **库街区 / 库洛游戏**：提供游戏角色图鉴与玩家数据 API。
+- **开源社区**：感谢 waves-plugin 等开源项目对库街区 API 的逆向与文档化工作。
+- **[Juliy / wuwa-gacha-tool](https://github.com/juliy819/wuwa-gacha-tool)**：感谢该开源项目（Apache-2.0）对鸣潮唤取记录链路的探索——Client.log 解密规则、链接提取方式与 13 类卡池接口的调用细节均以其为参考。本项目的抽卡记录功能为**独立重新实现的纯 C 版本**，不引用其任何代码，与上游项目无衍生关系之外的关联。
+- 鸣潮游戏及其角色、声骸、武器等美术资源版权归库洛游戏所有。
 
 ## 设计原则
 
-- 后端零第三方依赖（仅链接 Windows 系统库；云端请求经系统自带 `curl.exe` 转发，规避本机 WinHTTP 被宿主钩子破坏的问题）。
-- AI 走 Agnes AI 云端推理，不占用本机 CPU/GPU，不影响游戏帧率。
-- 全程无 Python：界面为浏览器 Web 前端，后端为单文件 C 可执行程序。
+- 后端零第三方依赖（仅链接 Windows 系统库与 C 标准库；库街区与官方抽卡接口的 HTTPS 请求均经系统自带 `curl.exe` 子进程转发，无需安装任何第三方库）。
+- **抽卡记录同样零依赖**：上游 wuwa-gacha-tool 使用 Rust + SQLite + reqwest 等完整技术栈，本项目仅借鉴其协议与算法思路，用纯 C（手写日志解密、URL 参数解析、JSON 切片、多线程并发同步）独立实现，不引入 SQLite / cJSON / libcurl 或任何需要安装的库。
+- 评分、定级算法完全在本地 C 后端运行，不依赖任何云端服务，保证结果一致、可复现、离线可用。
+- 全程无 Python / Node 运行时：界面为浏览器 Web 前端，后端为单文件 C 可执行程序。
+- 前端免构建：原生 HTML/CSS/JS，改完刷新即生效。
